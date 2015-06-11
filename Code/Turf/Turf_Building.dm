@@ -1,85 +1,28 @@
-/*turf/Ground
-	icon='Grounds.dmi'
-	New(turf/LOC)
-		..()
-		TurfBase = type
-		TurfFloor = null
-		TurfLiquid = null
-		TurfBridge = null
-		TurfWall = null
-	Cave
-		icon_state="Cave"
-		New(turf/LOC)
-			..()
-			if(y==3) icon_state="Peak"
-	Sand icon_state="Sand"
-	Snow icon_state="Snow"
-	Hell icon_state="Hell"
-	Grass icon_state="Grass"
-	Marsh
-		icon_state="Marsh"
-		New(turf/LOC)
-			..()
-			if(prob(40)) icon_state="[icon_state][rand(1,5)]"
-turf/Floor
-	New(turf/LOC)
-		..()
-		TurfFloor=type
-		TurfLiquid = null
-		TurfBridge = null
-		TurfWall = null
-		return(1)
-turf/Liquid
-	New(turf/LOC)
-		..()
-		TurfLiquid=type
-		TurfBridge = null
-		TurfWall = null
-		return(1)
-turf/Bridge
-	New(turf/LOC)
-		..()
-		TurfBridge=type
-		TurfWall = null
-		return(1)
-turf/Wall
-	New(turf/LOC)
-		..()
-		TurfWall=type
-
-turf/New(turf/LOC) if(isturf(LOC))
-	TurfBase = LOC.TurfBase
-	TurfFloor = LOC.TurfFloor
-	TurfLiquid = LOC.TurfLiquid
-	TurfBridge = LOC.TurfBridge
-	TurfWall = LOC.TurfWall
-turf/var
-	TurfBase = /turf/grounds/cavefloor2/
-	TurfFloor = null
-	TurfLiquid = null
-	TurfBridge = null
-	TurfWall = null
-mob/proc/BuildAt(turf/LOCATION) if(isturf(LOCATION)) for(var/mob/Monsters/M in view(1,LOCATION)) if(M.Owner==src) switch(SubFunction)
-	if("DestroyFloor") if(!LOCATION.density) if(LOCATION.Detailed) new LOCATION.TurfBase(LOCATION)
-	else
-		new SubFunction(LOCATION)*/
-mob/var/tmp
-	Function = null
-	SubFunction = null
-turf/proc/ClearTurf(LINKED)
+/turf/proc/ClearTurf(LINKED)
 	if(icon=='Stairs.dmi')
 		underlays-=underlays
 		var/Z
-		if(copytext(icon_state,-2)=="Up") switch(z)
-			if(GROUND_LAYER) Z=SKY_LAYER
-			if(UNDERGROUND_LAYER) Z=GROUND_LAYER
-			if(SKY_LAYER) return
-		if(copytext(icon_state,-4)=="Down") switch(z)
-			if(GROUND_LAYER) Z=UNDERGROUND_LAYER
-			if(UNDERGROUND_LAYER) return
-			if(SKY_LAYER) Z=GROUND_LAYER
+		if(copytext(icon_state,-2)=="Up")
+			switch(z)
+				if(GROUND_LAYER)
+					Z=SKY_LAYER
+				if(UNDERGROUND_LAYER)
+					Z=GROUND_LAYER
+				if(SKY_LAYER)
+					return
+		if(copytext(icon_state,-4)=="Down")
+			switch(z)
+				if(GROUND_LAYER)
+					Z=UNDERGROUND_LAYER
+				if(UNDERGROUND_LAYER)
+					return
+				if(SKY_LAYER)
+					Z=GROUND_LAYER
 		var/turf/TURF=locate(x,y,Z)
-		if(TURF) if(TURF.icon=='Stairs.dmi') if(!LINKED) TURF.ClearTurf(LINKED=1)
+		if(TURF)
+			if(TURF.icon=='Stairs.dmi')
+				if(!LINKED)
+					TURF.ClearTurf(LINKED=1)
 	if(isbridge)
 		CanFish = 1
 		density = 1
@@ -156,27 +99,30 @@ turf/proc/ClearTurf(LINKED)
 			del(Q)
 		return
 
-turf/MouseDrag(src)
+/turf/MouseDrag(src)
 	var/turf/S = src
 	if(isturf(src))
 //		switch(usr.Function)
 //			if("Build") for(var/mob/Monsters/M in view(1,src)) if(M.Owner==usr) usr.BuildAt(src)
-		if(usr.Function == "Pyrokinesis") for(var/mob/Monsters/M in usr.Selected)
-			if(M.SubRace == "Illithid" && M.Tiredness >= 0)
-				if(S.IsWood == 1)
-					if(M in range(8,S))
-						if(S.OnFire == 0)
-							for(var/mob/Monsters/M2 in view(0,S))
+		if(usr.Function == "Pyrokinesis")
+			for(var/mob/Monsters/M in usr.Selected)
+				if(M.SubRace == "Illithid" && M.Tiredness >= 0)
+					if(S.IsWood == 1)
+						if(M in range(8,S))
+							if(S.OnFire == 0)
+								for(var/mob/Monsters/M2 in view(0,S))
+									return
+								S.Fire()
+								M.Tiredness -= 75
+								if(M.invisibility >= 1)
+									M.invisibility = 0
+									view(M) << "[M] becomes visible!"
+								view(M) << "[M] uses their powers of pyrokinesis to set [S] ablaze!"
 								return
-							S.Fire()
-							M.Tiredness -= 75
-							if(M.invisibility >= 1)
-								M.invisibility = 0
-								view(M) << "[M] becomes visible!"
-							view(M) << "[M] uses their powers of pyrokinesis to set [S] ablaze!"
-							return
-					else M.Owner << "[M] is too far away to use their pyrokinesis"
-			else M.Owner << "[M] cannot use pyrokinesis right now."
+						else
+							M.Owner << "[M] is too far away to use their pyrokinesis"
+				else
+					M.Owner << "[M] cannot use pyrokinesis right now."
 		if(usr.Function == "Forcefield")
 			for(var/mob/Monsters/M in usr.Selected)
 				if(M.SubRace == "Illithid" && M.Tiredness >= 0)
@@ -188,8 +134,10 @@ turf/MouseDrag(src)
 						M.Tiredness += M.Intelligence / 50
 						S.ForceField()
 						return
-					else M.Owner << "[M] is too far away to use their forcefield"
-				else M.Owner << "[M] cannot use forcefield right now."
+					else
+						M.Owner << "[M] is too far away to use their forcefield"
+				else
+					M.Owner << "[M] cannot use forcefield right now."
 		if(usr.Function == "Telekinesis")
 			for(var/mob/Monsters/M in usr.Selected)
 				if(M.Tiredness >= 0)
@@ -231,8 +179,16 @@ turf/MouseDrag(src)
 									M2.BloodLoss()
 									if(Stunned == 1)
 										M2.StunnedWalk()
-									if(DropWeapon) for(var/obj/Items/Equipment/Weapon/W in M2) if(M2.UnEquipItem(W)) if(M2.DropItem(W)) view(M2) << "[M2] loses hold of [W]!"
-									if(DropShield) for(var/obj/Items/Equipment/Armour/Shield/W in M2) if(M2.UnEquipItem(W)) if(M2.DropItem(W)) view(M2) << "[M2] loses hold of [W]!"
+									if(DropWeapon)
+										for(var/obj/Items/Equipment/Weapon/W in M2)
+											if(M2.UnEquipItem(W))
+												if(M2.DropItem(W))
+													view(M2) << "[M2] loses hold of [W]!"
+									if(DropShield)
+										for(var/obj/Items/Equipment/Armour/Shield/W in M2)
+											if(M2.UnEquipItem(W))
+												if(M2.DropItem(W))
+													view(M2) << "[M2] loses hold of [W]!"
 									return
 								if(S.density == 0)
 									for(var/mob/Monsters/M3 in view(1,S))
@@ -254,8 +210,16 @@ turf/MouseDrag(src)
 											if(Stunned == 1)
 												M2.StunnedWalk()
 												M3.StunnedWalk()
-											if(DropWeapon) for(var/obj/Items/Equipment/Weapon/W in M2) if(M2.UnEquipItem(W)) if(M2.DropItem(W)) view(M2) << "[M2] loses hold of [W]!"
-											if(DropShield) for(var/obj/Items/Equipment/Armour/Shield/W in M2) if(M2.UnEquipItem(W)) if(M2.DropItem(W)) view(M2) << "[M2] loses hold of [W]!"
+											if(DropWeapon)
+												for(var/obj/Items/Equipment/Weapon/W in M2)
+													if(M2.UnEquipItem(W))
+														if(M2.DropItem(W))
+															view(M2) << "[M2] loses hold of [W]!"
+											if(DropShield)
+												for(var/obj/Items/Equipment/Armour/Shield/W in M2)
+													if(M2.UnEquipItem(W))
+														if(M2.DropItem(W))
+															view(M2) << "[M2] loses hold of [W]!"
 											return
 									M2.loc = S
 									M2.StopWalk()
@@ -268,13 +232,16 @@ turf/MouseDrag(src)
 			for(var/mob/Monsters/M in usr.Selected)
 				M.destination = null
 				if(S.CanDigAt == 1 || S.Tree == 1 || S.icon_state == "CaveWall")
-					for(var/obj/DigAt/DD2 in S) return
+					for(var/obj/DigAt/DD2 in S)
+						return
 					var/obj/DigAt/DD = new(S)
 					DD.Owner = M
 		if(usr.Function == "RemoveAutodig")
 			for(var/mob/Monsters/M in usr.Selected)
 				M.destination = null
-				for(var/obj/C in S) if(istype(C,/obj/DigAt/) && C.Owner == M) del(C)
+				for(var/obj/C in S)
+					if(istype(C,/obj/DigAt/) && C.Owner == M)
+						del(C)
 		if(usr.Function == "PlaceStoneBridge")
 			for(var/mob/Monsters/M in usr.Selected)
 				M.destination = null

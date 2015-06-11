@@ -24,21 +24,6 @@
 				EquipItem(I)
 	return(1)
 
-/mob
-	var/UsesEquipment="Normal" //Simply set to 0 to stop use of equipment.
-	var/HoldingWeapon
-	var/WearingChest
-	var/WearingShield
-	var/WearingHelmet
-	var/WearingLegs
-	var/WearingBack
-	var/WearingCape
-	var/WearingLeftArm
-	var/WearingRightArm
-	var/WearingFullPlateHelm
-	var/WearingRing = 0
-	var/WearingCrown
-
 /atom
 	var/WeaponDamageMin
 	var/WeaponDamageMax

@@ -71,9 +71,6 @@
 				usr.CoolDown("[GenderToLeader(Gender)]",36000)
 				return(1)
 
-/mob
-	var/IsRoyal
-
 /mob/proc/ChangeRoyal()
 	var/INFLUENCE
 	if(IsRoyal)
