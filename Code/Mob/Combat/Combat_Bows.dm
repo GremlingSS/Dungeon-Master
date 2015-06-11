@@ -1,5 +1,4 @@
-
-mob/proc/BowTarget()
+/mob/proc/BowTarget()
 	if(src.BowOn == 0)
 		return
 	if(src.HoldingWeapon == "Bow")
@@ -232,4 +231,5 @@ mob/proc/BowTarget()
 		src.BowOn = 0
 		return
 	if(src.BowOn)
-		spawn(50) BowTarget()
+		spawn(50)
+			BowTarget()

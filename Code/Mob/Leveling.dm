@@ -4,6 +4,7 @@ atom/var
 	Defence
 
 var/ExperienceMultiplier=1
+
 mob/proc/GainEXP(XP)
 	if(CanBeSlaved) EXP+=(XP*ExperienceMultiplier)/2
 	else EXP+=XP*ExperienceMultiplier

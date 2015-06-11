@@ -1,4 +1,4 @@
-turf/grounds/desert
+/turf/grounds/desert
 	name = "desert"
 	icon = 'Cave.dmi'
 	icon_state = "Desert"
@@ -7,7 +7,7 @@ turf/grounds/desert
 	OIcon = "Desert"
 	text = "<font color=#FFFF66>×"
 
-turf/grounds/snow
+/turf/grounds/snow
 	name = "snow"
 	icon = 'Cave.dmi'
 	icon_state = "Snow"
@@ -16,7 +16,7 @@ turf/grounds/snow
 	Sky = 1
 	text = "<font color=#F8F8F8>×"
 
-turf/grounds/marsh
+/turf/grounds/marsh
 	name = "marsh"
 	icon = 'Cave.dmi'
 	icon_state = "Marsh"
@@ -26,7 +26,7 @@ turf/grounds/marsh
 	OIcon = "Marsh"
 	text = "<font color=#00CC66>×"
 
-turf/grounds/marsh/New() switch(rand(1,16))
+/turf/grounds/marsh/New() switch(rand(1,16))
 	if(1) icon_state = "Tropical1"
 	if(2) icon_state = "Tropical2"
 	if(3) icon_state = "Tropical3"
@@ -34,7 +34,7 @@ turf/grounds/marsh/New() switch(rand(1,16))
 	if(5) icon_state = "Tropical5"
 	if(6 to 15) icon_state = "Marsh"
 
-turf/grounds/grass
+/turf/grounds/grass
 	name = "grass"
 	icon = 'Cave.dmi'
 	icon_state = "Grass"
@@ -43,7 +43,7 @@ turf/grounds/grass
 	OIcon = "Grass"
 	text = "<font color=#33CC33>×"
 
-turf/grounds/deadgrass
+/turf/grounds/deadgrass
 	name = "dead grass"
 	icon = 'Cave.dmi'
 	icon_state = "DeadGrass"
@@ -52,7 +52,7 @@ turf/grounds/deadgrass
 	OIcon = "DeadGrass"
 	text = "<font color=#003333>×"
 
-turf/grounds/goodgrass
+/turf/grounds/goodgrass
 	name = "flowery grass"
 	icon = 'Cave.dmi'
 	icon_state = "GoodGrass"
@@ -61,7 +61,7 @@ turf/grounds/goodgrass
 	OIcon = "GoodGrass"
 	text = "<font color=#66FF00>×"
 
-turf/grounds/cavefloor2
+/turf/grounds/cavefloor2
 	name = "cavefloor"
 	icon = 'Cave.dmi'
 	icon_state = "CaveFloor"
@@ -70,7 +70,7 @@ turf/grounds/cavefloor2
 	Sky = 1
 	text = "<font color=#999933>×"
 
-turf/grounds/WoodWall
+/turf/grounds/WoodWall
 	name = "Wooden Wall"
 	icon = 'Cave.dmi'
 	icon_state = "WoodWall"
@@ -83,25 +83,25 @@ turf/grounds/WoodWall
 	text = "<font color=#999900>#"
 	opacity = 1
 
-turf/grounds/DetailedFloor
+/turf/grounds/DetailedFloor
 	name = "stone floor"
 	icon = 'Cave.dmi'
 	icon_state = "DetailedFloor"
 	CanDigAt = 0
 	text = "<font color=#808080>×"
 
-turf/grounds/Stairs
+/turf/grounds/Stairs
 	Detailed=1
 	icon='Stairs.dmi'
 	Down icon_state="AncientDown"
 	Up icon_state="AncientUp"
 	var/DEFAULT_UNDERLAY="DetailedFloor"
 
-turf/grounds/Stairs/New()
+/turf/grounds/Stairs/New()
 	underlays+=icon('Cave.dmi',DEFAULT_UNDERLAY)
 	return(..())
 
-turf/grounds/cellarfloor
+/turf/grounds/cellarfloor
 	icon = 'Cave.dmi'
 	icon_state = "CaveWall"
 	density = 1
@@ -112,7 +112,7 @@ turf/grounds/cellarfloor
 	OIcon = "CaveFloor"
 	text = "<font color=#999933>#"
 
-turf/grounds/NoDig
+/turf/grounds/NoDig
 	name = "Impenetrible Mountain"
 	icon = 'Cave.dmi'
 	icon_state = "CaveWall"
@@ -123,7 +123,7 @@ turf/grounds/NoDig
 	Sky = 1
 	text = "<font color=#999933>#"
 
-turf/grounds/hellfloor
+/turf/grounds/hellfloor
 	name = "hellfloor"
 	icon = 'Cave.dmi'
 	icon_state = "HellFloor"
@@ -131,7 +131,7 @@ turf/grounds/hellfloor
 	OIcon = "HellFloor"
 	text = "<font color=#990033>×"
 
-turf/grounds/hellcliff
+/turf/grounds/hellcliff
 	name = "HellCliff"
 	icon = 'Cave.dmi'
 	icon_state = "HellCliff"
@@ -143,7 +143,7 @@ turf/grounds/hellcliff
 	OIcon = "CaveFloor"
 	text = "<font color=#999933>#"
 
-turf/grounds/cavefloor
+/turf/grounds/cavefloor
 	name = "Mountain"
 	icon = 'Cave.dmi'
 	icon_state = "CaveWall"
@@ -156,7 +156,7 @@ turf/grounds/cavefloor
 	OIcon = "CaveFloor"
 	text = "<font color=#999966>#"
 
-turf/grounds/DetailedWall2
+/turf/grounds/DetailedWall2
 	name = "DetailedWall"
 	icon = 'Cave.dmi'
 	icon_state = "DetailedWall"
@@ -167,12 +167,12 @@ turf/grounds/DetailedWall2
 	opacity = 1
 	text = "<font color=##888888>#"
 
-turf/grounds/Tomb
+/turf/grounds/Tomb
 	icon = 'Tomb.bmp'
 	density = 1
 	opacity = 0
 
-turf/grounds/DetailedWall
+/turf/grounds/DetailedWall
 	name = "DetailedWall"
 	icon = 'Cave.dmi'
 	icon_state = "DetailedWall"
@@ -183,7 +183,7 @@ turf/grounds/DetailedWall
 	opacity = 1
 	text = "<font color=#888888>#"
 
-turf/grounds/WoodFloor
+/turf/grounds/WoodFloor
 	name = "wood floor"
 	icon = 'Cave.dmi'
 	IsWood = 1
@@ -191,14 +191,14 @@ turf/grounds/WoodFloor
 	OIcon = "Grass"
 	text = "<font color=#666633>w"
 
-turf/grounds/Chasm
+/turf/grounds/Chasm
 	name = "Chasm"
 	icon = 'Cave.dmi'
 	icon_state = "Chasm"
 	Content = "Chasm"
 	text = "<font color=#181818>×"
 
-turf/grounds/Sky
+/turf/grounds/Sky
 	name = "Sky"
 	icon = 'Cave.dmi'
 	icon_state = "Sky"
@@ -207,7 +207,7 @@ turf/grounds/Sky
 	OIcon = "Sky"
 	text = "<font color=#33FFFF>×"
 
-turf/grounds/MountainPeak
+/turf/grounds/MountainPeak
 	icon = 'Cave.dmi'
 	icon_state = "Peak"
 	name = "peak"
@@ -215,10 +215,10 @@ turf/grounds/MountainPeak
 	OIcon = "Peak"
 	text = "<font color=#CC9900>×"
 
-turf/grounds/lavas
+/turf/grounds/lavas
 	Content3 = "Lava"
 
-turf/grounds/lavas/lava
+/turf/grounds/lavas/lava
 	name = "Lava"
 	icon = 'Lava.dmi'
 	icon_state = "Lava"
@@ -227,7 +227,7 @@ turf/grounds/lavas/lava
 	Content = "Lava"
 	text = "<font color=#FF0000>L"
 
-turf/grounds/Trees
+/turf/grounds/Trees
 	density = 1
 	layer = 4
 	opacity = 1
@@ -236,7 +236,7 @@ turf/grounds/Trees
 	name = "Tree"
 	text = "<font color=#99FF00>T"
 
-turf/grounds/Trees/Tree1
+/turf/grounds/Trees/Tree1
 	icon = 'plants.dmi'
 	icon_state = "tree 2x1"
 	Tree = 1
@@ -244,7 +244,7 @@ turf/grounds/Trees/Tree1
 	OIcon = "Grass"
 	text = "<font color=#99FF00>T"
 
-turf/grounds/Trees/Tree1/New()
+/turf/grounds/Trees/Tree1/New()
 	src.overlays += /obj/Trees/tree2x2
 	src.overlays += /obj/Trees/tree1x2
 	src.overlays += /obj/Trees/tree3x2
@@ -258,7 +258,7 @@ turf/grounds/Trees/Tree1/New()
 	src.icon = 'plants.dmi'
 	src.icon_state = "tree 2x1"
 
-turf/grounds/Trees/GoodTree
+/turf/grounds/Trees/GoodTree
 	icon = 'plants.dmi'
 	icon_state = "GoodTree"
 	Tree = 1
@@ -267,7 +267,7 @@ turf/grounds/Trees/GoodTree
 	Content3 = "GoodTree"
 	text = "<font color=#99FF00>T"
 
-turf/grounds/Trees/GoodTree/New()
+/turf/grounds/Trees/GoodTree/New()
 	src.overlays += /obj/Trees/tree2x2
 	src.overlays += /obj/Trees/tree1x2
 	src.overlays += /obj/Trees/tree3x2
@@ -281,7 +281,7 @@ turf/grounds/Trees/GoodTree/New()
 	src.icon = 'plants.dmi'
 	src.icon_state = "GoodTree"
 
-turf/grounds/Trees/TundraTree
+/turf/grounds/Trees/TundraTree
 	icon = 'plants.dmi'
 	icon_state = "PermSnow"
 	Tree = 1
@@ -290,12 +290,12 @@ turf/grounds/Trees/TundraTree
 	IsWood = 1
 	text = "<font color=#F8F8F8>T"
 
-turf/grounds/Trees/TundraTree/New()
+/turf/grounds/Trees/TundraTree/New()
 	src.overlays += /obj/Trees/tree2x2
 	src.overlays += /obj/Trees/tree1x2
 	src.overlays += /obj/Trees/tree3x2
 
-turf/grounds/Trees/DeadTree
+/turf/grounds/Trees/DeadTree
 	icon = 'plants.dmi'
 	icon_state = "DeadGrassTree"
 	Tree = 1
@@ -305,12 +305,12 @@ turf/grounds/Trees/DeadTree
 	name = "Dead Tree"
 	text = "<font color=#505050>T"
 
-turf/grounds/Trees/DeadTree/New()
+/turf/grounds/Trees/DeadTree/New()
 	src.overlays += /obj/Trees/tree2x2
 	src.overlays += /obj/Trees/tree1x2
 	src.overlays += /obj/Trees/tree3x2
 
-turf/grounds/Trees/Bamboo
+/turf/grounds/Trees/Bamboo
 	icon = 'Cave.dmi'
 	icon_state = "Bamboo"
 	Tree = 1
@@ -321,7 +321,7 @@ turf/grounds/Trees/Bamboo
 	OIcon = "Marsh"
 	text = "<font color=#99FF00>B"
 
-turf/grounds/Trees/Cactus
+/turf/grounds/Trees/Cactus
 	icon = 'Cave.dmi'
 	icon_state = "Cactus"
 	Tree = 1
@@ -330,15 +330,15 @@ turf/grounds/Trees/Cactus
 	OIcon = "Desert"
 	text = "<font color=#99FF00>C"
 
-turf/grounds/Trees/Tree2
+/turf/grounds/Trees/Tree2
 	icon = 'Trees.dmi'
 	icon_state = "1"
 
-turf/grounds/Trees/Tree3
+/turf/grounds/Trees/Tree3
 	icon = 'Trees.dmi'
 	icon_state = "1"
 
-turf/grounds/DesertWater
+/turf/grounds/DesertWater
 	Content3 = "Liquid"
 	icon = 'water.dmi'
 	icon_state = "water"
@@ -348,10 +348,10 @@ turf/grounds/DesertWater
 	OIcon = "water"
 	text = "<font color=#0000CC>W"
 
-turf/grounds/waters
+/turf/grounds/waters
 	Content3 = "Liquid"
 
-turf/grounds/waters/swamp
+/turf/grounds/waters/swamp
 	name = "Swamp"
 	icon = 'Swamp.dmi'
 	icon_state = "water"
@@ -362,7 +362,7 @@ turf/grounds/waters/swamp
 	OIcon = "Swamp"
 	text = "<font color=#00CC99>S"
 
-turf/grounds/waters/water
+/turf/grounds/waters/water
 	name = "Water"
 	icon = 'water.dmi'
 	icon_state = "water"
@@ -373,7 +373,7 @@ turf/grounds/waters/water
 	OIcon = "water"
 	text = "<font color=#0000CC>W"
 
-turf/grounds/waters/underwater
+/turf/grounds/waters/underwater
 	icon = 'water.dmi'
 	icon_state = "water"
 	density = 1

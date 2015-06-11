@@ -1,54 +1,75 @@
-atom/movable/proc/Fling(DIR=pick(NORTH,SOUTH,WEST,EAST,SOUTHEAST,SOUTHWEST,NORTHEAST,NORTHWEST),DIST=2,BLEED=0)
+/atom/movable/proc/Fling(DIR=pick(NORTH,SOUTH,WEST,EAST,SOUTHEAST,SOUTHWEST,NORTHEAST,NORTHWEST),DIST=2,BLEED=0)
 	dir=DIR
 	if(BLEED)
 		var/obj/Bloods/Blood5/B = new(loc)
 		B.dir = dir
 	spawn()
-		for(var/PRO=0,PRO<DIST,PRO++) if(isturf(loc))
-			step(src,dir)
-			sleep(2)
-			if(BLEED&&PRO+1!=DIST)
-				var/obj/Bloods/Blood5/B2 = new(loc)
-				B2.dir = dir
-		if(istype(src,/obj/Items/Equipment/)) dir=SOUTH
-mob/proc/LimbFling(NAME) if(!Fling)
-	var/obj/Items/Bones/BloodyLimb/A = new(loc)
-	A.name = "[src]'s [NAME]"
-	A.Fling(DIST=2,BLEED=prob(50))
-mob/proc/BleedingPropell() if(!Fling)
-	dir = pick(NORTH,SOUTH,WEST,EAST)
-	var/obj/Bloods/Blood/B = new(loc)
-	B.dir = dir
-	step(src,dir)
-	spawn(1)
-		var/obj/Bloods/Blood/B2 = new(loc)
-		B2.dir = dir
+		for(var/PRO=0,PRO<DIST,PRO++)
+			if(isturf(loc))
+				step(src,dir)
+				sleep(2)
+				if(BLEED&&PRO+1!=DIST)
+					var/obj/Bloods/Blood5/B2 = new(loc)
+					B2.dir = dir
+		if(istype(src,/obj/Items/Equipment/))
+			dir=SOUTH
+
+/mob/proc/LimbFling(NAME)
+	if(!Fling)
+		var/obj/Items/Bones/BloodyLimb/A = new(loc)
+		A.name = "[src]'s [NAME]"
+		A.Fling(DIST=2,BLEED=prob(50))
+
+/mob/proc/BleedingPropell()
+	if(!Fling)
+		dir = pick(NORTH,SOUTH,WEST,EAST)
+		var/obj/Bloods/Blood/B = new(loc)
+		B.dir = dir
 		step(src,dir)
 		spawn(1)
-			var/obj/Bloods/Blood/B3 = new(loc)
-			B3.dir = dir
+			var/obj/Bloods/Blood/B2 = new(loc)
+			B2.dir = dir
 			step(src,dir)
-			var/obj/Bloods/Blood/B4 = new(loc)
-			B4.dir = dir
+			spawn(1)
+				var/obj/Bloods/Blood/B3 = new(loc)
+				B3.dir = dir
+				step(src,dir)
+				var/obj/Bloods/Blood/B4 = new(loc)
+				B4.dir = dir
 
-mob/proc/LimbLoss()
+/mob/proc/LimbLoss()
 	switch(Race)
-		if("Devourer","Dragon","Spider") return
+		if("Devourer","Dragon","Spider")
+			return
 		else if(!CantLoseLimbs)
-			if(!HasLeftArm) icon_state = "NoLeftArm"
-			if(!HasRightArm) icon_state = "NoRightArm"
-			if(!HasLeftLeg) icon_state = "NoLeftLeg"
-			if(!HasRightLeg) icon_state = "NoRightLeg"
-			if(!HasRightArm&&!HasLeftArm) icon_state = "NoArms"
-			if(!HasRightLeg&&!HasLeftLeg)icon_state = "NoLegs"
-			if(!HasRightLeg&&!HasLeftArm) icon_state = "NoRightLegNoLeftArm"
-			if(!HasLeftLeg&&!HasRightArm)icon_state = "NoLeftLegNoRightArm"
-			if(!HasRightLeg&&!HasRightArm)icon_state = "NoRightArmNoRightLeg"
-			if(!HasLeftLeg&&!HasLeftArm)icon_state = "NoLeftArmNoLeftLeg"
-			if(!HasRightLeg&&!HasLeftLeg&&!HasRightArm) icon_state = "NoLegsNoRightArm"
-			if(!HasRightLeg&&!HasLeftLeg&&!HasLeftArm) icon_state = "NoLegsNoLeftArm"
-			if(!HasRightLeg&&!HasRightArm&&!HasLeftArm) icon_state = "NoArmsNoRightLeg"
-			if(!HasLeftLeg&&!HasRightArm&&!HasLeftArm) icon_state = "NoArmsNoLeftLeg"
+			if(!HasLeftArm)
+				icon_state = "NoLeftArm"
+			if(!HasRightArm)
+				icon_state = "NoRightArm"
+			if(!HasLeftLeg)
+				icon_state = "NoLeftLeg"
+			if(!HasRightLeg)
+				icon_state = "NoRightLeg"
+			if(!HasRightArm&&!HasLeftArm)
+				icon_state = "NoArms"
+			if(!HasRightLeg&&!HasLeftLeg)
+				icon_state = "NoLegs"
+			if(!HasRightLeg&&!HasLeftArm)
+				icon_state = "NoRightLegNoLeftArm"
+			if(!HasLeftLeg&&!HasRightArm)
+				icon_state = "NoLeftLegNoRightArm"
+			if(!HasRightLeg&&!HasRightArm)
+				icon_state = "NoRightArmNoRightLeg"
+			if(!HasLeftLeg&&!HasLeftArm)
+				icon_state = "NoLeftArmNoLeftLeg"
+			if(!HasRightLeg&&!HasLeftLeg&&!HasRightArm)
+				icon_state = "NoLegsNoRightArm"
+			if(!HasRightLeg&&!HasLeftLeg&&!HasLeftArm)
+				icon_state = "NoLegsNoLeftArm"
+			if(!HasRightLeg&&!HasRightArm&&!HasLeftArm)
+				icon_state = "NoArmsNoRightLeg"
+			if(!HasLeftLeg&&!HasRightArm&&!HasLeftArm)
+				icon_state = "NoArmsNoLeftLeg"
 			if(!HasLeftLeg&&!HasRightArm&&!HasLeftArm&&!HasRightLeg)
 				icon_state = "None"
 				switch(Race)
@@ -62,21 +83,30 @@ mob/proc/LimbLoss()
 						DeathType = "Crumbled into Bonemeal"
 						Owner << "<b><font color=red>[src] crumbles into a white bonemeal!!!"
 						Death()
-			if(HasLeftLeg&&HasRightArm&&HasLeftArm&&HasRightLeg) icon_state = "Normal"
-mob/proc/BloodLoss() if(src.Race != "Gargoyle" && Race != "Skeleton")
-	for(var/mob/Monsters/M in range(2,src))
-		if(M.destination == src)
-			if(M.HoldingWeapon == "Dagger" && M.DaggerSkill >= 125)
-				src.SaidBleed = 1
-	if(src.SaidBleed == 0)
-		src.SaidBleed = 1
-		src.Owner << "<b><font color=red>[src] is bleeding!!"
-	if(src.BloodContent <= 300) src.BleedType = "Very Mildly"
-	if(src.BloodContent <= 260) src.BleedType = "Mildly"
-	if(src.BloodContent <= 130) src.BleedType = "Badly"
-	if(src.BloodContent <= 90) src.BleedType = "Very Badly"
-	if(src.BloodContent <= 20) src.BleedType = "Extremly"
-mob/proc/DamageType(MULTI=1,MAX=150)
+			if(HasLeftLeg&&HasRightArm&&HasLeftArm&&HasRightLeg)
+				icon_state = "Normal"
+
+/mob/proc/BloodLoss()
+	if(src.Race != "Gargoyle" && Race != "Skeleton")
+		for(var/mob/Monsters/M in range(2,src))
+			if(M.destination == src)
+				if(M.HoldingWeapon == "Dagger" && M.DaggerSkill >= 125)
+					src.SaidBleed = 1
+		if(src.SaidBleed == 0)
+			src.SaidBleed = 1
+			src.Owner << "<b><font color=red>[src] is bleeding!!"
+		if(src.BloodContent <= 300)
+			src.BleedType = "Very Mildly"
+		if(src.BloodContent <= 260)
+			src.BleedType = "Mildly"
+		if(src.BloodContent <= 130)
+			src.BleedType = "Badly"
+		if(src.BloodContent <= 90)
+			src.BleedType = "Very Badly"
+		if(src.BloodContent <= 20)
+			src.BleedType = "Extremly"
+
+/mob/proc/DamageType(MULTI=1,MAX=150)
 	if(Race=="Human")
 		MULTI*=1.25
 		MAX=200
@@ -88,38 +118,47 @@ mob/proc/DamageType(MULTI=1,MAX=150)
 			src.DamageType = "Blunt"
 			src.MaceSkill += SKILLEXP
 			src.SkillDMG = src.MaceSkill / 4
-			if(src.MaceSkill > MAX) src.MaceSkill = MAX
+			if(src.MaceSkill > MAX)
+				src.MaceSkill = MAX
 		if("Butcher Knife")
 			src.DamageType = "Slashing"
 			src.ButcherySkill += SKILLEXP
 			src.SkillDMG = src.ButcherySkill / 4
-			if(src.ButcherySkill > MAX) src.ButcherySkill = MAX
+			if(src.ButcherySkill > MAX)
+				src.ButcherySkill = MAX
 		if("Sword")
 			src.DamageType = "Slashing"
 			src.SwordSkill += SKILLEXP
 			src.SkillDMG = src.SwordSkill / 4
-			if(src.SwordSkill > MAX) src.SwordSkill = MAX
+			if(src.SwordSkill > MAX)
+				src.SwordSkill = MAX
 		if("Claws")
 			src.DamageType = "Slashing"
 			src.ClawSkill += SKILLEXP
-			if(src.Race != "Spider") src.SkillDMG = src.ClawSkill / 4
-			else src.SkillDMG = src.ClawSkill / 15
-			if(src.ClawSkill > MAX) src.ClawSkill = MAX
+			if(src.Race != "Spider")
+				src.SkillDMG = src.ClawSkill / 4
+			else
+				src.SkillDMG = src.ClawSkill / 15
+			if(src.ClawSkill > MAX)
+				src.ClawSkill = MAX
 		if("Dagger")
 			src.DamageType = "Slashing"
 			src.DaggerSkill += SKILLEXP
 			src.SkillDMG = src.DaggerSkill / 4
-			if(src.DaggerSkill > MAX) src.DaggerSkill = MAX
+			if(src.DaggerSkill > MAX)
+				src.DaggerSkill = MAX
 		if("Axe")
 			src.DamageType = "Slashing"
 			src.AxeSkill += SKILLEXP
 			src.SkillDMG = src.AxeSkill / 4
-			if(src.AxeSkill > MAX) src.AxeSkill = MAX
+			if(src.AxeSkill > MAX)
+				src.AxeSkill = MAX
 		if("Spear")
 			src.DamageType = "Slashing"
 			src.SpearSkill += SKILLEXP
 			src.SkillDMG = src.SpearSkill / 4
-			if(src.SpearSkill > MAX) src.SpearSkill = MAX
+			if(src.SpearSkill > MAX)
+				src.SpearSkill = MAX
 		else
 			switch(Race)
 				if("Kobold","Vampire")
@@ -129,10 +168,11 @@ mob/proc/DamageType(MULTI=1,MAX=150)
 					src.DamageType = "Blunt"
 					src.SkillDMG = src.UnArmedSkill / 3.5
 			src.UnArmedSkill += SKILLEXP
-			if(src.UnArmedSkill > MAX) src.UnArmedSkill = MAX
+			if(src.UnArmedSkill > MAX)
+				src.UnArmedSkill = MAX
 
 
-mob/proc/CheckDefence()
+/mob/proc/CheckDefence()
 	for(var/mob/Monsters/M in oview(1,src))
 		if(M == src.destination)
 			if(src.HitHead == 1)
@@ -146,7 +186,9 @@ mob/proc/CheckDefence()
 							M.ArmourSkill += 0.1
 						else if(M.Race == "Dwarf" && M.ArmourSkill <= 120)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitLeftArm == 1)
 				if(M.WearingLeftArm == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -156,7 +198,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitRightArm == 1)
 				if(M.WearingRightArm == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -166,7 +210,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitLeftLeg == 1)
 				if(M.WearingLegs == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -176,7 +222,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitRightLeg == 1)
 				if(M.WearingLegs == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -186,7 +234,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitLowerBody == 1)
 				if(M.WearingChest == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -196,7 +246,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitUpperBody == 1)
 				if(M.WearingChest == 1 || !M.UsesEquipment)
 					var/DeflectChance
@@ -206,7 +258,9 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 			if(src.HitWings)
 				if(M.WearingChest || !M.UsesEquipment)
 					var/DeflectChance
@@ -216,24 +270,34 @@ mob/proc/CheckDefence()
 						M.overlays += /obj/miss/
 						if(M.ArmourSkill <= 101)
 							M.ArmourSkill += 0.1
-						spawn(10) if(M) M.overlays -= /obj/miss/
+						spawn(10)
+							if(M)
+								M.overlays -= /obj/miss/
 
-mob/proc/Combats(atom/movable/TARGET)
-	if(HoldingWeapon=="Bow") return
+/mob/proc/Combats(atom/movable/TARGET)
+	if(HoldingWeapon=="Bow")
+		return
 	if(isobj(TARGET))
 		var/obj/M=TARGET
-		if(M == src.destination) if(M.HumanParts == 0) if(M.Wagon == 0)
-			var/WepDMG = rand(src.WeaponDamageMin,src.WeaponDamageMax)
-			var/Damage = WepDMG + src.Strength / 2 + src.SkillDMG
-			M.HP -= Damage
-			if(M.HP <= 0) del(M)
+		if(M == src.destination)
+			if(M.HumanParts == 0)
+				if(M.Wagon == 0)
+					var/WepDMG = rand(src.WeaponDamageMin,src.WeaponDamageMax)
+					var/Damage = WepDMG + src.Strength / 2 + src.SkillDMG
+					M.HP -= Damage
+					if(M.HP <= 0)
+						del(M)
 		return
-	if(ismob(TARGET)) src.Attack(TARGET)
-mob/proc/Attack(mob/Monsters/M)
+	if(ismob(TARGET))
+		src.Attack(TARGET)
+
+/mob/proc/Attack(mob/Monsters/M)
 	var/Faint
 	var/Stun
-	if(Owner == M.Owner) return
-	if(Stunned || Fainted || M.WS || M.key) return
+	if(Owner == M.Owner)
+		return
+	if(Stunned || Fainted || M.WS || M.key)
+		return
 //	if(!CanSee) return
 	src.HitHead = 0
 	src.HitLeftArm = 0
@@ -268,62 +332,93 @@ mob/proc/Attack(mob/Monsters/M)
 				M.GoingToDie = 1
 				M.Death()
 		return //Saves running an else case and having to indent.
-	for(var/obj/Items/Equipment/Weapon/DemonicWeapons/DestructionSword/D in src) if(D.suffix == "(Equipped)") if(prob(0.5)) M.Fire()
-	if(src.Race == "Vampire") if(M.WearingFullPlateHelm == 0 && M.Race!="Skeleton") VampireBite(M,85,0.5)
-	if(M.HoldingWeapon && M.HoldingWeapon != "Dagger") if(src.HoldingWeapon && src.HoldingWeapon != "Dagger") src.FightSound()
-	if(!HoldingWeapon) src.FightSound2()
+	for(var/obj/Items/Equipment/Weapon/DemonicWeapons/DestructionSword/D in src)
+		if(D.suffix == "(Equipped)")
+			if(prob(0.5))
+				M.Fire()
+	if(src.Race == "Vampire")
+		if(M.WearingFullPlateHelm == 0 && M.Race!="Skeleton")
+			VampireBite(M,85,0.5)
+	if(M.HoldingWeapon && M.HoldingWeapon != "Dagger")
+		if(src.HoldingWeapon && src.HoldingWeapon != "Dagger")
+			src.FightSound()
+	if(!HoldingWeapon)
+		src.FightSound2()
 	switch(HoldingWeapon)
-		if("Butcher Knife") if(prob(ButcherySkill/60))
-			var/obj/Items/Food/MEAT=M.MakeMeat()
-			if(MEAT)
-				MEAT.Fling(DIST=2,BLEED=1)
-				view(M) << "[src] prematurely butchers [M]!"
-				M.BloodContent -= round(ButcherySkill/15)
-				M.BloodLoss()
-		if("Axe") if(prob(AxeSkill/350)) for(var/obj/Items/Equipment/Armour/Shield/S in M) if(M.UnEquipItem(S)) if(M.DropItem(S))
-			view(M) << "[M]'s shield is broken by [src]'s axe blow!"
-			del(S)
-		if("Sword") if(M.Race!="Demon") if(prob(SwordSkill/350)) for(var/obj/Items/Equipment/Weapon/W in M) if(M.UnEquipItem(W)) if(M.DropItem(W))
-			view(M) << "[M] is skillfully disarmed by [src]!"
-			W.Fling()
-		if("Mace") if(prob(MaceSkill/350)) for(var/obj/Items/Equipment/Armour/Helmet/W in M) if(UnEquipItem(W)) if(DropItem(W))
-			view(M) << "[src] violently bashes [M] in the skull smashing their helmet!"
-			M.BrainHP -= 1
-			del(W)
+		if("Butcher Knife")
+			if(prob(ButcherySkill/60))
+				var/obj/Items/Food/MEAT=M.MakeMeat()
+				if(MEAT)
+					MEAT.Fling(DIST=2,BLEED=1)
+					view(M) << "[src] prematurely butchers [M]!"
+					M.BloodContent -= round(ButcherySkill/15)
+					M.BloodLoss()
+		if("Axe")
+			if(prob(AxeSkill/350))
+				for(var/obj/Items/Equipment/Armour/Shield/S in M)
+					if(M.UnEquipItem(S))
+						if(M.DropItem(S))
+							view(M) << "[M]'s shield is broken by [src]'s axe blow!"
+							del(S)
+		if("Sword")
+			if(M.Race!="Demon")
+				if(prob(SwordSkill/350))
+					for(var/obj/Items/Equipment/Weapon/W in M)
+						if(M.UnEquipItem(W))
+							if(M.DropItem(W))
+								view(M) << "[M] is skillfully disarmed by [src]!"
+								W.Fling()
+		if("Mace")
+			if(prob(MaceSkill/350))
+				for(var/obj/Items/Equipment/Armour/Helmet/W in M)
+					if(UnEquipItem(W))
+						if(DropItem(W))
+							view(M) << "[src] violently bashes [M] in the skull smashing their helmet!"
+							M.BrainHP -= 1
+							del(W)
 		if("Spear","Claws","Dagger")
-		else if(M.Race!="Demon") if(prob(UnArmedSkill/350)) for(var/obj/Items/Equipment/Weapon/W in M) if(M.UnEquipItem(W)) if(M.DropItem(W))
-			view(M) << "[src] wrenches [M]'s weapon out of their hands!"
-			if(PickUpItem(W)) EquipItem(W)
-	if(M.Race=="Frogman") if(prob((M.Level/33)+1))
-		if(!src.ImmunePoison)
-			src.BloodContent -= M.Level/6
-			src.BloodLoss()
-			view(src) << "[M]'s skin poisons [src]"
-		else
-			src.BloodContent -= M.Level/12
-			src.BloodLoss()
-			view(src) << "[M]'s skin poisons [src] - 1/2 of the damage is resisted"
-	if(HasGland) if(prob(3))
-		if(!M.ImmunePoison)
-			M.BloodContent -= src.PoisonDMG
-			M.BloodLoss()
-			view(src) << "[src]'s fangs poison [M]"
-		else
-			M.BloodContent -= src.PoisonDMG/2
-			M.BloodLoss()
-			view(src) << "[src]'s fangs poison [M] - 1/2 damage is resisted"
-	for(var/obj/Items/Equipment/Weapon/W in src) if(W.suffix == "(Equipped)") if(W.Poisoned)
-		var/HIT = prob(2)
-		if(HoldingWeapon=="Dagger") HIT = prob(3)
-		if(HIT)
-			if(M.ImmunePoison)
-				M.BloodContent -= W.PoisonDMG/2
-				M.BloodLoss()
-				view(src) << "[src]'s [W] poisons [M] - 1/2 damage is resisted"
+		else if(M.Race!="Demon")
+			if(prob(UnArmedSkill/350))
+				for(var/obj/Items/Equipment/Weapon/W in M)
+					if(M.UnEquipItem(W))
+						if(M.DropItem(W))
+							view(M) << "[src] wrenches [M]'s weapon out of their hands!"
+							if(PickUpItem(W)) EquipItem(W)
+	if(M.Race=="Frogman")
+		if(prob((M.Level/33)+1))
+			if(!src.ImmunePoison)
+				src.BloodContent -= M.Level/6
+				src.BloodLoss()
+				view(src) << "[M]'s skin poisons [src]"
 			else
-				M.BloodContent -= W.PoisonDMG
+				src.BloodContent -= M.Level/12
+				src.BloodLoss()
+				view(src) << "[M]'s skin poisons [src] - 1/2 of the damage is resisted"
+	if(HasGland)
+		if(prob(3))
+			if(!M.ImmunePoison)
+				M.BloodContent -= src.PoisonDMG
 				M.BloodLoss()
-				view(src) << "[src]'s [W] poisons [M]"
+				view(src) << "[src]'s fangs poison [M]"
+			else
+				M.BloodContent -= src.PoisonDMG/2
+				M.BloodLoss()
+				view(src) << "[src]'s fangs poison [M] - 1/2 damage is resisted"
+	for(var/obj/Items/Equipment/Weapon/W in src)
+		if(W.suffix == "(Equipped)")
+			if(W.Poisoned)
+				var/HIT = prob(2)
+				if(HoldingWeapon=="Dagger")
+					HIT = prob(3)
+				if(HIT)
+					if(M.ImmunePoison)
+						M.BloodContent -= W.PoisonDMG/2
+						M.BloodLoss()
+						view(src) << "[src]'s [W] poisons [M] - 1/2 damage is resisted"
+					else
+						M.BloodContent -= W.PoisonDMG
+						M.BloodLoss()
+						view(src) << "[src]'s [W] poisons [M]"
 	var/Hit = prob(src.Agility)
 	if(Hit == 0)
 		..()
@@ -332,7 +427,8 @@ mob/proc/Attack(mob/Monsters/M)
 		var/Blocked
 		Block += M.ShieldSkill / 2
 		Block -= src.Agility / 4
-		if(Block >= 90) Block = 90
+		if(Block >= 90)
+			Block = 90
 		Blocked = prob(Block)
 		if(M.HoldingWeapon == "Spear")
 			var/SpearBlockChance = prob(M.SpearSkill/50)
@@ -355,65 +451,94 @@ mob/proc/Attack(mob/Monsters/M)
 		var/WepDMG = 0
 		WepDMG += rand(src.WeaponDamageMin,src.WeaponDamageMax)
 		var/Damage = WepDMG + src.Strength / 2  + src.SkillDMG
-		if(src.HoldingWeapon == "Dagger") if(M.Sleeping) Damage += src.DaggerSkill
-		if(src.HoldingWeapon=="Mace") if(M.Race=="Gargoyle") Damage += M.Defence/4
-		if(M.Race=="Gargoyle"&&M.Flying) Damage -= M.Defence/4
-		else Damage -= M.Defence/2
+		if(src.HoldingWeapon == "Dagger")
+			if(M.Sleeping)
+				Damage += src.DaggerSkill
+		if(src.HoldingWeapon=="Mace")
+			if(M.Race=="Gargoyle")
+				Damage += M.Defence/4
+		if(M.Race=="Gargoyle" && M.Flying)
+			Damage -= M.Defence/4
+		else
+			Damage -= M.Defence/2
 		if(M.SubRace == "Werewolf")
 			Damage -= 5
-			if(M.Werepowers) Damage -= 10
+			if(M.Werepowers)
+				Damage -= 10
 		if(src.WearingRing)
-			for(var/obj/Items/gems/G in src) if(G.suffix == "(Equipped)")
-				if(G.icon_state == "Ruby Ring") Damage += 3
-				if(G.icon_state == "Emerald Ring") if(prob(0.8))
-					M.BloodContent -= 10
-					M.BloodLoss()
-					view() << "[src]'s ring [G] poisons [M]"
-		for(var/obj/Items/Equipment/Armour/A in M) if(A.suffix == "(Equipped)" && A.Silver)
-			switch(SubRace)
-				if("Werewolf")
-					Damage-=6
-					if(Werepowers) Damage-=8
-				if("HalfDemon") Damage-=8
-			if(Undead) Damage-=8
-		for(var/obj/Items/Equipment/Weapon/SW in src) if(SW.suffix == "(Equipped)")
-			if(SW.Silver)
-				if(M.SubRace=="HalfDemon")
-					Damage += 12
-					Damage += M.Level*0.1
-				if(M.SubRace=="Werewolf")
-					Damage += 12
-					if(M.Werepowers) Damage += M.Level*0.7
-				if(M.Undead) Damage += 12
-			switch(SW.Content3)
-				if("Cursed")
-					Damage += rand(-10,15)
-					if(prob(0.25))
-						M.BloodContent -= 5
-						src.BloodContent += 5
-						view(src) << "[src] leeches some of [M]'s life force!"
-					if(prob(0.25))
-						GainEXP(M.EXP)
-						M.EXP = 0
-						EXPNeeded -= 1
-						M.EXPNeeded += 1
-						view(src) << "[src] drains strength and knowledge from [M]!"
-				if("Blessed")
-					if(M.Undead) Damage += 10
-					if(M.Race == "Vampire") Damage -= 2
-					if(M.Race == "Demon") Damage += 12
-					if(M.SubRace == "HalfDemon") Damage += 12
-					if(M.SubRace == "Werewolf")
-						if(M.Werepowers) Damage += 7
-						else Damage += 3
-		if(M.Race == "Frogman") Damage*=0.80
-		Damage*=DamageMultiplier
-		if(Damage<5) Damage=5
-		if(Delay==5) Damage*=1.25
-		if(Running) switch(Delay)
-			if(3) Damage*=0.75
-			if(2) Damage*=0.66
-			if(1) Damage*=0.50
+			for(var/obj/Items/gems/G in src)
+				if(G.suffix == "(Equipped)")
+					if(G.icon_state == "Ruby Ring")
+						Damage += 3
+					if(G.icon_state == "Emerald Ring")
+						if(prob(0.8))
+							M.BloodContent -= 10
+							M.BloodLoss()
+							view() << "[src]'s ring [G] poisons [M]"
+		for(var/obj/Items/Equipment/Armour/A in M)
+			if(A.suffix == "(Equipped)" && A.Silver)
+				switch(SubRace)
+					if("Werewolf")
+						Damage-=6
+						if(Werepowers)
+							Damage-=8
+					if("HalfDemon")
+						Damage-=8
+				if(Undead)
+					Damage-=8
+		for(var/obj/Items/Equipment/Weapon/SW in src)
+			if(SW.suffix == "(Equipped)")
+				if(SW.Silver)
+					if(M.SubRace=="HalfDemon")
+						Damage += 12
+						Damage += M.Level*0.1
+					if(M.SubRace=="Werewolf")
+						Damage += 12
+						if(M.Werepowers)
+							Damage += M.Level*0.7
+					if(M.Undead) Damage += 12
+				switch(SW.Content3)
+					if("Cursed")
+						Damage += rand(-10,15)
+						if(prob(0.25))
+							M.BloodContent -= 5
+							src.BloodContent += 5
+							view(src) << "[src] leeches some of [M]'s life force!"
+						if(prob(0.25))
+							GainEXP(M.EXP)
+							M.EXP = 0
+							EXPNeeded -= 1
+							M.EXPNeeded += 1
+							view(src) << "[src] drains strength and knowledge from [M]!"
+					if("Blessed")
+						if(M.Undead)
+							Damage += 10
+						if(M.Race == "Vampire")
+							Damage -= 2
+						if(M.Race == "Demon")
+							Damage += 12
+						if(M.SubRace == "HalfDemon")
+							Damage += 12
+						if(M.SubRace == "Werewolf")
+							if(M.Werepowers)
+								Damage += 7
+							else
+								Damage += 3
+		if(M.Race == "Frogman")
+			Damage *= 0.80
+		Damage *= DamageMultiplier
+		if(Damage < 5)
+			Damage = 5
+		if(Delay == 5)
+			Damage *= 1.25
+		if(Running)
+			switch(Delay)
+				if(3)
+					Damage *= 0.75
+				if(2)
+					Damage *= 0.66
+				if(1)
+					Damage *= 0.50
 		if(M.Race != "Spider")
 			src.HitLeftLeg = prob(4)
 			src.HitRightLeg = prob(4)
@@ -733,7 +858,10 @@ mob/proc/Attack(mob/Monsters/M)
 						if(M.RightArmHP <= 60)
 							M.RightArm = "Broken"
 							M.CanUseRightArm = 0
-							for(var/obj/Items/Equipment/Weapon/S in M) if(M.UnEquipItem(S)) if(M.DropItem(S)) view() <<"<b><font color=red>[M]'s right arm is broken, they drop their weapon!"
+							for(var/obj/Items/Equipment/Weapon/S in M)
+								if(M.UnEquipItem(S))
+									if(M.DropItem(S))
+										view() <<"<b><font color=red>[M]'s right arm is broken, they drop their weapon!"
 							Stun = prob(1)
 							if(Stun == 1)
 								M.Stunned = 1
@@ -779,7 +907,10 @@ mob/proc/Attack(mob/Monsters/M)
 							M.BloodContent -= 15
 							M.BloodLoss()
 							M.CanUseRightArm = 0
-							for(var/obj/Items/Equipment/Weapon/S in M) if(M.UnEquipItem(S)) if(M.DropItem(S)) view() <<"<b><font color=red>[M]'s right arm is broken, they drop their weapon!"
+							for(var/obj/Items/Equipment/Weapon/S in M)
+								if(M.UnEquipItem(S))
+									if(M.DropItem(S))
+										view() <<"<b><font color=red>[M]'s right arm is broken, they drop their weapon!"
 							Faint = prob(0.5)
 							if(Faint == 1)
 								M.Fainted = 1
@@ -820,7 +951,8 @@ mob/proc/Attack(mob/Monsters/M)
 									M.Defence -= S.Defence
 									M.weight -= S.weight
 									S.loc = M.loc
-									if(!S.Content3) S.DeleteItem()
+									if(!S.Content3)
+										S.DeleteItem()
 									view() <<"<b><font color=red>[M]'s right arm is slashed off, they loose some of their armour!"
 							Faint = prob(0.5)
 							if(Faint == 1)
@@ -850,7 +982,10 @@ mob/proc/Attack(mob/Monsters/M)
 						if(M.LeftArmHP <= 60)
 							M.LeftArm = "Broken"
 							M.CanUseLeftArm = 0
-							for(var/obj/Items/Equipment/Armour/Shield/S in M) if(M.UnEquipItem(S)) if(M.DropItem(S)) view() <<"<b><font color=red>[M]'s left arm is broken, they drop their shield!"
+							for(var/obj/Items/Equipment/Armour/Shield/S in M)
+								if(M.UnEquipItem(S))
+									if(M.DropItem(S))
+										view() <<"<b><font color=red>[M]'s left arm is broken, they drop their shield!"
 							Stun = prob(1)
 							if(Stun == 1)
 								M.Stunned = 1
@@ -896,7 +1031,10 @@ mob/proc/Attack(mob/Monsters/M)
 							M.BloodContent -= 15
 							M.BloodLoss()
 							M.CanUseLeftArm = 0
-							for(var/obj/Items/Equipment/Armour/Shield/S in M) if(M.UnEquipItem(S)) if(M.DropItem(S)) view() <<"<b><font color=red>[M]'s left arm is broken, they drop their shield!"
+							for(var/obj/Items/Equipment/Armour/Shield/S in M)
+								if(M.UnEquipItem(S))
+									if(M.DropItem(S))
+										view() <<"<b><font color=red>[M]'s left arm is broken, they drop their shield!"
 							Faint = prob(0.5)
 							if(Faint == 1)
 								M.Fainted = 1
@@ -934,7 +1072,8 @@ mob/proc/Attack(mob/Monsters/M)
 									M.Defence -= S.Defence
 									M.weight-=S.weight
 									S.loc = M.loc
-									if(!S.Content3) S.DeleteItem()
+									if(!S.Content3)
+										S.DeleteItem()
 									view() <<"<b><font color=red>[M]'s left arm is slashed off, they loose some of their armour!"
 							M.RebuildOverlays()
 							M.LeftArm = "Destroyed"

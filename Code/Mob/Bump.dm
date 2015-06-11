@@ -1,13 +1,24 @@
-mob/Monsters/Bump(atom/m)
-	if(m!=destination) for(var/atom/DESTINATION in range(0,m)) if(DESTINATION==destination) if(DESTINATION.density) return(Bump(DESTINATION))
-	if(src.Flying) if(m.density)
-		if(m.icon_state == "Lava") src.loc = m
-		if(m.CaveWater) src.loc = m
-		if(m.icon == 'Swamp.dmi') src.loc = m
-		if(m.icon_state == "water") src.loc = m
+/mob/Monsters/Bump(atom/m)
+	if(m!=destination)
+		for(var/atom/DESTINATION in range(0,m))
+			if(DESTINATION==destination)
+				if(DESTINATION.density)
+					return(Bump(DESTINATION))
+	if(src.Flying)
+		if(m.density)
+			if(m.icon_state == "Lava")
+				src.loc = m
+			if(m.CaveWater)
+				src.loc = m
+			if(m.icon == 'Swamp.dmi')
+				src.loc = m
+			if(m.icon_state == "water")
+				src.loc = m
 	if(m==src.destination && m.density && density && m.Owner!=Owner)
 		if(m.TP)
-			if(ismob(Owner)) if(!Owner:client) destination = null
+			if(ismob(Owner))
+				if(!Owner:client)
+					destination = null
 			flick("Dig",m)
 			GainEXP(m.Content3)
 			Hunger -= 0.2
@@ -29,7 +40,8 @@ mob/Monsters/Bump(atom/m)
 						if(find == 1)
 							var/obj/Items/ores/stone/B = new
 							B.loc = src.loc
-							if(src.FishingSkill < 120) src.FishingSkill += 0.3
+							if(src.FishingSkill < 120)
+								src.FishingSkill += 0.3
 							return
 			if(m.CaveWater)
 				flick("Dig",m)
@@ -45,7 +57,8 @@ mob/Monsters/Bump(atom/m)
 					B.FishDecay()
 					B.Race = "Fish"
 					B.weight = 5
-					if(src.FishingSkill < 120) src.FishingSkill += 0.3
+					if(src.FishingSkill < 120)
+						src.FishingSkill += 0.3
 					return
 			if(m.icon == 'Swamp.dmi')
 				flick("Dig",m)
@@ -62,7 +75,8 @@ mob/Monsters/Bump(atom/m)
 						B.FishDecay()
 						B.Race = "Fish"
 						B.weight = 5
-						if(src.FishingSkill < 120) src.FishingSkill += 0.3
+						if(src.FishingSkill < 120)
+							src.FishingSkill += 0.3
 						return
 					if(TFish == 0)
 						var/mob/Body/B = new
@@ -73,7 +87,8 @@ mob/Monsters/Bump(atom/m)
 						B.FishDecay()
 						B.Race = "Fish"
 						B.weight = 5
-						if(src.FishingSkill < 120) src.FishingSkill += 0.3
+						if(src.FishingSkill < 120)
+							src.FishingSkill += 0.3
 						return
 			if(m.icon_state == "water")
 				flick("Dig",m)
@@ -89,7 +104,8 @@ mob/Monsters/Bump(atom/m)
 					B.FishDecay()
 					B.Race = "Fish"
 					B.weight = 5
-					if(src.FishingSkill < 120) src.FishingSkill += 0.3
+					if(src.FishingSkill < 120)
+						src.FishingSkill += 0.3
 					return
 		if(m.Tree == 1)
 			if(src.UsesPicks == 0 || src.HoldingWeapon == "Axe" || src.Race == "Goblin" || src.Werepowers == 1 || src.VampPick == 1)
@@ -131,11 +147,16 @@ mob/Monsters/Bump(atom/m)
 							MET4.loc = src.loc
 					m.icon = 'Cave.dmi'
 					m.icon_state = "Grass"
-					if(m.Cactus) m.icon_state = "Desert"
-					if(m.Bamboo) m.icon_state = "Marsh"
-					if(m.Content3 == "PermTree") m.icon_state = "Snow"
-					if(m.Content3 == "EvilTree") m.icon_state = "DeadGrass"
-					if(m.Content3 == "HolyTree") m.icon_state = "GoodGrass"
+					if(m.Cactus)
+						m.icon_state = "Desert"
+					if(m.Bamboo)
+						m.icon_state = "Marsh"
+					if(m.Content3 == "PermTree")
+						m.icon_state = "Snow"
+					if(m.Content3 == "EvilTree")
+						m.icon_state = "DeadGrass"
+					if(m.Content3 == "HolyTree")
+						m.icon_state = "GoodGrass"
 					m.density = 0
 					m.opacity = 0
 				return
@@ -147,7 +168,8 @@ mob/Monsters/Bump(atom/m)
 				if(m.icon_state == "Elf Wall")
 					if(src.Race != "Elf")
 						var/Harm = prob(2)
-						if(HoldingWeapon != "Pickaxe") Harm = prob(6)
+						if(HoldingWeapon != "Pickaxe")
+							Harm = prob(6)
 						if(Harm == 1)
 							src.BloodContent -= rand(15,25)
 							src.BloodLoss()
@@ -344,5 +366,7 @@ mob/Monsters/Bump(atom/m)
 				return
 		return
 	if(m)
-		if(m.Owner == src.Owner && src.destination == m.loc) return
-		else step_rand(src)
+		if(m.Owner == src.Owner && src.destination == m.loc)
+			return
+		else
+			step_rand(src)

@@ -386,3 +386,12 @@ obj/Items/Equipment/DblClick()
 			for(var/mob/Monsters/M in usr.Selected)
 				if(M.PickUpItem(src,1))
 					return(1)
+
+obj/proc/Delete()
+	spawn()
+		if(BloodAcidity)
+			sleep(750)
+			del(src)
+		else
+			sleep(rand(1500,3000))
+			del(src)
