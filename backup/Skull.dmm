@@ -5,7 +5,7 @@
 "e" = (/obj/Items/gems/Diamond,/turf/grounds/cavefloor2,/area)
 "f" = (/turf/grounds/cavefloor2,/area)
 "g" = (/obj/Items/gems/Ruby,/obj/PermPortal1,/turf/grounds/cavefloor2,/area)
-"h" = (/mob/Monsters/Demon/NPC,/turf/grounds/cavefloor2,/area)
+"h" = (/mob/Monsters/DemonNPC,/turf/grounds/cavefloor2,/area)
 "i" = (/obj/Items/gems/Emerald,/turf/grounds/cavefloor2,/area)
 
 (1,1,1) = {"

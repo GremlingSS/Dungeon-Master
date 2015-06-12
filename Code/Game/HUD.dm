@@ -1,256 +1,213 @@
-#define DEBUG
 
-var/MultiKeyAllowed=null
-mob/verb/Multikey()
-	set hidden=1
-	if(key== world.host)
-		if(MultiKeyAllowed)
-			usr << "Disabled"
-			MultiKeyAllowed=null
-		else
-			usr << "Enabled"
-			MultiKeyAllowed=1
-mob
-	Logout()
-		Players -= usr
-		usr.Save()
-		usr.Up = 0
-		world << "<b><font color=purple>[usr] has logged out."
-		usr.Restart = 0
-		for(var/obj/DigAt/D in world) if(D.Owner == usr) del(D)
-		for(var/mob/Monsters/M in usr.UnitList)
-			M.DigTarget = null
-			M.destination = null
-			M.Guarding(AUTO=1)
-		for(var/mob/Monsters/M in usr.Selected)
-			usr.Selected.Remove(M)
-			M.destination = null
-	Login()
-		usr.Load()
-		usr.IsWood = 0
-		usr.Up = 0
-		usr.DMID = usr.client.address
-		usr.verbs+=typesof(/Targeting/verb/)
-		usr.Content = "CantBeCaged"
-		for(var/mob/KL in Players) if(KL != usr)
-			if(KL.client.computer_id == usr.client.computer_id) if(KL!=usr)
-				if(MultiKeyAllowed) world << "[KL.key] was trying to connect as [usr.key], and then did!"
-				else
-					world << "[KL.key] was trying to connect as [usr.key], but was refused access!"
-					del(client)
-					return
-			if(KL.DMID==usr.DMID)
-				if(KL.LockDown)
-					spawn() verbs-=verbs
-					spawn() client.verbs-=client.verbs
-					client.verbs-=client.verbs
-					verbs-=verbs
-				for(var/Player/P) if(P.GM || P.DE) P << "[KL] is running as [usr]<br>Registered as: [DMID]"
-		if(usr in Players2) ..()
-		else Players2 += usr
-		Players += usr
-		if(usr.key == world.host) adminlist += usr.client.address
-		if(usr.client.address in adminlist)
-			usr.verbs+=typesof(/Admin/verb/)
-			usr.verbs+=typesof(/TurfCreate/verb)
-			usr.verbs+=typesof(/mob/Spawn/verb)
-			usr.verbs+=typesof(/MiscCreate/verb)
-			usr.verbs+=typesof(/mob/Developer/verb)
-			usr.GM = 1
-			usr.DE = 1
-			usr.sight = 30
-		if(usr.IsClanLeader) usr.verbs+=typesof(/Clan/verb)
-		if(usr.GM)
-			usr.Rares += "SandKing"
-			usr.Rares += "Illithids"
-		usr << "<b><font color=lime><font size=3>Autosaves happen every 15 minutes, if the server crashes you will be rolled back by at most 15 minutes."
-		if(!usr.GM) world << "<b><font color =purple>[usr] has logged in."
-		usr << "\blue <center><b><BIG>[LoginMessage]"
-		usr.Intro()
-		if(!usr.Loaded) if(usr.LoadUnits()) return
-		for(var/mob/Monsters/M in usr.UnitList) if(M.Owner == usr)
-			usr.loc = M.loc
-			break
-		for(var/mob/Monsters/M in usr.UnitList) return
-		usr.Loaded = 1
-		usr.loc = locate(rand(350,700),rand(400,750),1)
-		usr.density = 0
-		if(usr.LoggedIn == 0)
-			usr.LoggedIn = 1
-			var/Sand = prob(3)
-			var/Illit = prob(3)
-			for(var/mob/LLL in PlayerList) if(LLL.DMID == usr.DMID) if(LLL.key != usr.key)
-				Sand = 0
-				Illit = 0
-			if(Sand) usr.Rares += "SandKing"
-			if(Illit) usr.Rares += "Illithids"
-		var/In = 0
-		if(usr in PlayerList) In = 1
-		if(In == 0) PlayerList += usr
-		usr.Restart = 0
-		usr << "<b>Press R to choose a race to play."
-obj/Hud/Left
+/obj/Hud/Left
 	icon = 'HUD.dmi'
 	icon_state = "Left"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "1,2 to 1,18"
-		c.screen += src
-obj/Hud/Right
+
+/obj/Hud/Left/New(client/c)
+	screen_loc = "1,2 to 1,18"
+	c.screen += src
+
+/obj/Hud/Right
 	icon = 'HUD.dmi'
 	icon_state = "Right"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "19,2 to 19,18"
-		c.screen += src
-obj/Hud/Top
+
+/obj/Hud/Right/New(client/c)
+	screen_loc = "19,2 to 19,18"
+	c.screen += src
+
+/obj/Hud/Top
 	icon = 'HUD.dmi'
 	icon_state = "Top"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "2,19 to 18,19"
-		c.screen += src
-obj/Hud/Top2
+
+/obj/Hud/Top/New(client/c)
+	screen_loc = "2,19 to 18,19"
+	c.screen += src
+
+/obj/Hud/Top2
 	icon = 'HUD.dmi'
 	icon_state = "Top2"
 	layer = 12
 	name = ""
-	New(client/c)
-		screen_loc = "10,19"
-		c.screen += src
-obj/Hud/Day
+
+/obj/Hud/Top2/New(client/c)
+	screen_loc = "10,19"
+	c.screen += src
+
+/obj/Hud/Day
 	icon = 'HUD.dmi'
 	icon_state = "Moon"
 	layer = 10
 	name = ""
-	New(client/c)
-		if(!night) icon_state="Sun"
-		screen_loc = "10,19"
-		c.screen += src
-obj/Hud/Bottom
+
+/obj/Hud/Day/New(client/c)
+	if(!night)
+		icon_state="Sun"
+	screen_loc = "10,19"
+	c.screen += src
+
+/obj/Hud/Bottom
 	icon = 'HUD.dmi'
 	icon_state = "Bottom"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "2,1 to 18,1"
-		c.screen += src
-obj/Hud/BottomLeft
+
+/obj/Hud/Bottom/New(client/c)
+	screen_loc = "2,1 to 18,1"
+	c.screen += src
+
+/obj/Hud/BottomLeft
 	icon = 'HUD.dmi'
 	icon_state = "BottomRight"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "1,1"
-		c.screen += src
-obj/Hud/TopLeft
+
+/obj/Hud/BottomLeft/New(client/c)
+	screen_loc = "1,1"
+	c.screen += src
+
+/obj/Hud/TopLeft
 	icon = 'HUD.dmi'
 	icon_state = "TopLeft"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "1,19"
-		c.screen += src
-obj/Hud/TopRight
+
+/obj/Hud/TopLeft/New(client/c)
+	screen_loc = "1,19"
+	c.screen += src
+
+/obj/Hud/TopRight
 	icon = 'HUD.dmi'
 	icon_state = "TopRight"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "19,19"
-		c.screen += src
-obj/Hud/BottomRight
+
+/obj/Hud/TopRight/New(client/c)
+	screen_loc = "19,19"
+	c.screen += src
+
+/obj/Hud/BottomRight
 	icon = 'HUD.dmi'
 	icon_state = "BottomLeft"
 	layer = 10
 	name = ""
-	New(client/c)
-		screen_loc = "19,1"
-		c.screen += src
-obj/Hud/Warp
+
+/obj/Hud/BottomRight/New(client/c)
+	screen_loc = "19,1"
+	c.screen += src
+
+/obj/Hud/Warp
 	icon = 'HUD.dmi'
 	icon_state = "Warp"
 	layer = 10
 	name = "Warp to a set of X,Y,Z cords. Hot Key - (G)"
-	New(client/c)
-		screen_loc = "1,3"
-		c.screen += src
-	DblClick() usr.Coords()
-obj/Hud/Interact
+
+/obj/Hud/Warp/New(client/c)
+	screen_loc = "1,3"
+	c.screen += src
+
+/obj/Hud/Warp/DblClick()
+	usr.Coords()
+
+/obj/Hud/Interact
 	icon = 'HUD.dmi'
 	icon_state = "Interact"
 	layer = 10
 	name = "Interact with an object or mob near by.Hot Key - (i)"
-	New(client/c)
-		screen_loc = "1,2"
-		c.screen += src
-	DblClick() usr.Interact()
-obj/Hud/Build
+
+/obj/Hud/Interact/New(client/c)
+	screen_loc = "1,2"
+	c.screen += src
+
+/obj/Hud/Interact/DblClick()
+	usr.Interact()
+
+/obj/Hud/Build
 	icon = 'HUD.dmi'
 	icon_state = "Build"
 	layer = 10
 	name = "Displays the build menu.Hot Key - (B)"
-	New(client/c)
-		screen_loc = "1,6"
-		c.screen += src
-	DblClick() usr.Test()
-obj/Hud/Area
+
+/obj/Hud/Build/New(client/c)
+	screen_loc = "1,6"
+	c.screen += src
+
+/obj/Hud/Build/DblClick()
+	usr.Test()
+
+/obj/Hud/Area
 	icon = 'HUD.dmi'
 	icon_state = "Area"
 	layer = 10
 	name = "Selects all of your units in the area.Hot Key - (A)"
-	New(client/c)
-		screen_loc = "1,7"
-		c.screen += src
-	DblClick() usr.All()
 
-obj/Hud/Pointer
+/obj/Hud/Area/New(client/c)
+	screen_loc = "1,7"
+	c.screen += src
+
+/obj/Hud/Area/DblClick()
+	usr.All()
+
+/obj/Hud/Pointer
 	icon = 'HUD.dmi'
 	icon_state = "Pointer"
 	layer = 10
 	name = "Toggle the use of an icon for your view centre. Hot Key - (None)"
-	New(client/c)
-		screen_loc = "1,16"
-		c.screen += src
-	DblClick()
-		if(usr.icon == 'Player.dmi') usr.icon = null
-		else usr.icon = 'Player.dmi'
 
-obj/Hud/All
+/obj/Hud/Pointer/New(client/c)
+	screen_loc = "1,16"
+	c.screen += src
+
+/obj/Hud/Pointer/DblClick()
+	if(usr.icon == 'Player.dmi')
+		usr.icon = null
+	else
+		usr.icon = 'Player.dmi'
+
+/obj/Hud/All
 	icon = 'HUD.dmi'
 	icon_state = "All"
 	layer = 10
 	name = "Selects all your units in the world. Hot Key - (E)"
-	New(client/c)
-		screen_loc = "1,8"
-		c.screen += src
-	DblClick() usr.Every()
-obj/Hud/DigOnUnit
+
+/obj/Hud/All/New(client/c)
+	screen_loc = "1,8"
+	c.screen += src
+
+/obj/Hud/All/DblClick()
+	usr.Every()
+
+/obj/Hud/DigOnUnit
 	icon = 'HUD.dmi'
 	icon_state = "DigOnUnit"
 	layer = 10
 	name = "Turns autodig on/off on selected units. Hot Key - (none)"
-	New(client/c)
-		screen_loc = "18,19"
-		c.screen += src
-	DblClick()
-		for(var/mob/Monsters/c in usr.Selected)
-			if(c.Dig == 0)
-				c.Dig = 1
-				c.Dig()
-				usr << "[c]'s Auto Dig is On!"
-			else if(c.Dig == 1)
-				c.Dig = 0
-				c.destination = null
-				c.DigTarget = null
-				usr << "[c]'s Auto Dig is off!"
-				for(var/obj/DigAt/DD in world)
-					if(DD.Owner == c)
-						del(DD)
-obj/Hud/EquipArmor
+
+/obj/Hud/DigOnUnit/New(client/c)
+	screen_loc = "18,19"
+	c.screen += src
+
+/obj/Hud/DigOnUnit/DblClick()
+	for(var/mob/Monsters/c in usr.Selected)
+		if(c.Dig == 0)
+			c.Dig = 1
+			c.Dig()
+			usr << "[c]'s Auto Dig is On!"
+		else if(c.Dig == 1)
+			c.Dig = 0
+			c.destination = null
+			c.DigTarget = null
+			usr << "[c]'s Auto Dig is off!"
+			for(var/obj/DigAt/DD in world)
+				if(DD.Owner == c)
+					del(DD)
+
+/obj/Hud/EquipArmor
 	icon = 'HUD.dmi'
 	icon_state = "ArmorE"
 	layer = 10
@@ -259,7 +216,7 @@ obj/Hud/EquipArmor
 		screen_loc = "19,19"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Equipment/E in c) c.EquipItem(E)
-obj/Hud/RemoveArmor
+/obj/Hud/RemoveArmor
 	icon = 'HUD.dmi'
 	icon_state = "ArmorUnE"
 	layer = 10
@@ -268,7 +225,7 @@ obj/Hud/RemoveArmor
 		screen_loc = "19,18"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Equipment/E in c) c.UnEquipItem(E)
-obj/Hud/ZDown
+/obj/Hud/ZDown
 	icon = 'HUD.dmi'
 	icon_state = "ZDown"
 	text = "<font color=cyan>v"
@@ -281,7 +238,7 @@ obj/Hud/ZDown
 		if(1) usr.z=2
 		if(2) usr.z=4
 		if(3) usr.z=1
-obj/Hud/ZUp
+/obj/Hud/ZUp
 	icon = 'HUD.dmi'
 	icon_state = "ZUp"
 	text = "<font color=cyan>^"
@@ -294,7 +251,7 @@ obj/Hud/ZUp
 		if(4) usr.z=2
 		if(1) usr.z=3
 		if(2) usr.z=1
-obj/Hud/DropGems
+/obj/Hud/DropGems
 	icon = 'HUD.dmi'
 	icon_state = "DropGems"
 	layer = 10
@@ -303,7 +260,7 @@ obj/Hud/DropGems
 		screen_loc = "19,10"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/gems/A in c) c.DropItem(A)
-obj/Hud/DropBones
+/obj/Hud/DropBones
 	icon = 'HUD.dmi'
 	icon_state = "DropBones"
 	layer = 10
@@ -313,7 +270,7 @@ obj/Hud/DropBones
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Bones/A in c) c.DropItem(A)
 
-obj/Hud/DropWood
+/obj/Hud/DropWood
 	icon = 'HUD.dmi'
 	icon_state = "DropWood"
 	layer = 10
@@ -322,7 +279,7 @@ obj/Hud/DropWood
 		screen_loc = "19,8"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/woods/wood/A in c) c.DropItem(A)
-obj/Hud/DropEdibles
+/obj/Hud/DropEdibles
 	icon = 'HUD.dmi'
 	icon_state = "DropEdibles"
 	text = "<font color=red>%"
@@ -334,7 +291,7 @@ obj/Hud/DropEdibles
 	DblClick() for(var/mob/Monsters/c in usr.Selected)
 		for(var/obj/Items/Food/B in c) c.DropItem(B)
 		for(var/mob/Body/B in c) c.DropItem(B)
-obj/Hud/DropOres
+/obj/Hud/DropOres
 	icon = 'HUD.dmi'
 	icon_state = "DropOres"
 	text = "<font color=yellow>*"
@@ -344,7 +301,7 @@ obj/Hud/DropOres
 		screen_loc = "19,6"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/ores/A in c) if(A.icon_state!="Stone") c.DropItem(A)
-obj/Hud/DropStone
+/obj/Hud/DropStone
 	icon = 'HUD.dmi'
 	icon_state = "Stone"
 	text = "#"
@@ -354,7 +311,7 @@ obj/Hud/DropStone
 		screen_loc = "19,5"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/ores/stone/A in c) c.DropItem(A)
-obj/Hud/DropIngots
+/obj/Hud/DropIngots
 	icon = 'HUD.dmi'
 	icon_state = "DropIngots"
 	text = "="
@@ -364,7 +321,7 @@ obj/Hud/DropIngots
 		screen_loc = "19,4"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Ingots/A in c) c.DropItem(A)
-obj/Hud/DropArmor
+/obj/Hud/DropArmor
 	icon = 'HUD.dmi'
 	icon_state = "DropArmor"
 	text = "<b>æ"
@@ -374,7 +331,7 @@ obj/Hud/DropArmor
 		screen_loc = "19,11"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Equipment/A in c) c.DropItem(A,0)
-obj/Hud/Armor
+/obj/Hud/Armor
 	icon = 'HUD.dmi'
 	icon_state = "Armor"
 	layer = 10
@@ -390,7 +347,7 @@ obj/Hud/Armor
 		for(var/obj/Items/Equipment/Armour/Helmet/A in oview(1,c)) if(c.PickUpItem(A)) break
 		for(var/obj/Items/Equipment/Armour/Shield/A in oview(1,c)) if(c.PickUpItem(A)) break
 		for(var/obj/Items/Equipment/Weapon/A in oview(1,c)) if(c.PickUpItem(A)) break
-obj/Hud/Skin
+/obj/Hud/Skin
 	icon = 'HUD.dmi'
 	icon_state = "Skin"
 	layer = 10
@@ -400,7 +357,7 @@ obj/Hud/Skin
 		screen_loc = "14,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Skin/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Seeds
+/obj/Hud/Seeds
 	icon = 'HUD.dmi'
 	icon_state = "Seeds"
 	layer = 10
@@ -409,7 +366,7 @@ obj/Hud/Seeds
 		screen_loc = "4,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Seeds/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Ores
+/obj/Hud/Ores
 	icon = 'HUD.dmi'
 	icon_state = "Ores"
 	text = "<font color=yellow>*"
@@ -419,7 +376,7 @@ obj/Hud/Ores
 		screen_loc = "12,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/ores/A in oview(1,c)) if(A.icon_state!="Stone") if(A.icon_state!="Silver"||c.Race!="Vampire"&&c.SubRace!="Werewolf") c.PickUpItem(A)
-obj/Hud/Edibles
+/obj/Hud/Edibles
 	icon = 'HUD.dmi'
 	icon_state = "Edibles"
 	text = "<font color=red>%"
@@ -453,7 +410,7 @@ obj/Hud/Edibles
 				del(F)
 		for(var/obj/Items/Food/A in oview(1,c)) c.PickUpItem(A)
 		for(var/mob/Body/B in oview(1,c)) c.PickUpItem(B)
-obj/Hud/TearMeat
+/obj/Hud/TearMeat
 	icon = 'HUD.dmi'
 	icon_state = "TearMeat"
 	layer = 10
@@ -469,7 +426,7 @@ obj/Hud/TearMeat
 		if(M.Race == "Devourer" || M.Race == "Spider" || M.Race == "Dragon" || M.SandWorker == 1 || M.Werepowers == 1 || M.Race == "Vampire") for(var/mob/Body/m in M) M.TearMeat(m)
 		if(M.Carn || M.HoldingWeapon == "Butcher Knife" || M.HoldingWeapon == "Dagger") for(var/mob/Body/m in M) M.TearMeat(m)
 
-obj/Hud/TearSkin
+/obj/Hud/TearSkin
 	icon = 'HUD.dmi'
 	icon_state = "TearSkin"
 	layer = 10
@@ -481,7 +438,7 @@ obj/Hud/TearSkin
 		if(M.Race == "Spider" || M.Race == "Dragon" || M.SandWorker || M.Werepowers || M.Race == "Vampire") for(var/mob/Body/m in M) M.TearSkin(m)
 		if(M.Carn || M.HoldingWeapon == "Butcher Knife" || M.HoldingWeapon == "Dagger") for(var/mob/Body/m in M) M.TearSkin(m)
 
-obj/Hud/Bones
+/obj/Hud/Bones
 	icon = 'HUD.dmi'
 	icon_state = "Bones"
 	layer = 10
@@ -491,7 +448,7 @@ obj/Hud/Bones
 		screen_loc = "10,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Bones/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Wood
+/obj/Hud/Wood
 	icon = 'HUD.dmi'
 	icon_state = "Wood"
 	layer = 10
@@ -500,7 +457,7 @@ obj/Hud/Wood
 		screen_loc = "9,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/woods/wood/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Stone
+/obj/Hud/Stone
 	icon = 'HUD.dmi'
 	icon_state = "Stone"
 	layer = 10
@@ -509,7 +466,7 @@ obj/Hud/Stone
 		screen_loc = "8,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/ores/stone/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Gem
+/obj/Hud/Gem
 	icon = 'HUD.dmi'
 	icon_state = "Gems"
 	layer = 10
@@ -518,7 +475,7 @@ obj/Hud/Gem
 		screen_loc = "7,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/gems/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Ingots
+/obj/Hud/Ingots
 	icon = 'HUD.dmi'
 	icon_state = "Ingots"
 	layer = 10
@@ -528,7 +485,7 @@ obj/Hud/Ingots
 		screen_loc = "6,1"
 		c.screen += src
 	DblClick() for(var/mob/Monsters/c in usr.Selected) for(var/obj/Items/Ingots/A in oview(1,c)) c.PickUpItem(A)
-obj/Hud/Arrows
+/obj/Hud/Arrows
 	icon = 'HUD.dmi'
 	icon_state = "Arrows"
 	layer = 10
@@ -540,7 +497,7 @@ obj/Hud/Arrows
 		A.loc = L
 		A.Owner = c.Owner
 		L.Content += 1
-obj/Hud/Cords
+/obj/Hud/Cords
 	icon = 'HUD.dmi'
 	icon_state = "Cords"
 	layer = 10
@@ -549,7 +506,7 @@ obj/Hud/Cords
 		screen_loc = "1,4"
 		c.screen += src
 	DblClick() usr.GetCords()
-obj/Hud/MSG
+/obj/Hud/MSG
 	icon = 'HUD.dmi'
 	icon_state = "MSG"
 	layer = 10
@@ -558,7 +515,7 @@ obj/Hud/MSG
 		screen_loc = "1,11"
 		c.screen += src
 	DblClick() usr.SendMSG()
-obj/Hud/Say
+/obj/Hud/Say
 	icon = 'HUD.dmi'
 	icon_state = "Say"
 	layer = 10
@@ -567,7 +524,7 @@ obj/Hud/Say
 		screen_loc = "1,10"
 		c.screen += src
 	DblClick() usr.WorldSay()
-obj/Hud/Way
+/obj/Hud/Way
 	icon = 'HUD.dmi'
 	icon_state = "Way"
 	layer = 10
@@ -576,7 +533,7 @@ obj/Hud/Way
 		screen_loc = "1,9"
 		c.screen += src
 	DblClick() usr.WayPoint()
-obj/Hud/Who
+/obj/Hud/Who
 	icon = 'HUD.dmi'
 	icon_state = "Who"
 	layer = 10
@@ -585,7 +542,7 @@ obj/Hud/Who
 		screen_loc = "1,5"
 		c.screen += src
 	DblClick() usr.Who()
-obj/Hud/Restart
+/obj/Hud/Restart
 	icon = 'HUD.dmi'
 	icon_state = "Restart"
 	layer = 10
@@ -595,7 +552,7 @@ obj/Hud/Restart
 		c.screen += src
 	DblClick()
 		usr.Restart()
-obj/Hud/Updates
+/obj/Hud/Updates
 	icon = 'HUD.dmi'
 	icon_state = "Updates"
 	layer = 10
@@ -604,7 +561,7 @@ obj/Hud/Updates
 		screen_loc = "1,14"
 		c.screen += src
 	DblClick() usr.Updates()
-obj/Hud/Find
+/obj/Hud/Find
 	icon = 'HUD.dmi'
 	icon_state = "Find"
 	layer = 10
@@ -613,7 +570,7 @@ obj/Hud/Find
 		screen_loc = "1,15"
 		c.screen += src
 	DblClick() usr.Goto()
-obj/Hud/Stop
+/obj/Hud/Stop
 	icon = 'HUD.dmi'
 	icon_state = "Stop"
 	layer = 10
@@ -622,7 +579,8 @@ obj/Hud/Stop
 		screen_loc = "1,13"
 		c.screen += src
 	DblClick() usr.StopAll()
-client
+
+/client
 	macro_mode=1
 	Southeast() ..()
 	Southwest() ..()

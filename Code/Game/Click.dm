@@ -1,4 +1,4 @@
-client/Click(atom/m)
+/client/Click(atom/m)
 	if(usr.Function == "Tapestry")
 		for(var/mob/Monsters/M in usr.Selected)
 			if(M in range(1,m))
@@ -29,6 +29,7 @@ client/Click(atom/m)
 							M.Owner << "Tapestry Placed."
 							usr.Function = "Tapestry"
 							return
+
 	if(usr.Function == "PlaceArrowSlit")
 		for(var/mob/Monsters/M in usr.Selected)
 			if(M in range(1,m))
@@ -54,13 +55,16 @@ client/Click(atom/m)
 							M.Owner << "Arrow Slit Placed."
 							usr.Function = "PlaceArrowSlit"
 							return
+
 	if(usr.Function == "Patrol") if(isturf(m))
 		usr << "<b>Patrol Rule added to selected units. Your selected units will now patrol between the clicked location and the location they were at when you set this while on guard."
 		for(var/mob/Monsters/M in usr.Selected) M.Patrol(M.loc,m)
 		usr.Function=null
+
 	if(ismob(m))
 		var/mob/mb = m
 		if(mb.client) return
+
 	for(var/mob/Monsters/M in usr.Selected)
 		if(M.CanSee == 0)
 			M.Owner << "[M] cant see!!"
@@ -99,6 +103,7 @@ client/Click(atom/m)
 										if(M.BowOn == 0)
 											M.BowOn = 1
 											M.BowTarget()
+
 			switch(m.icon_state)
 				if("Silver Chest","Gold Chest","Metal Chest","Wooden Chest","Drill") if(!M.Wagon)
 					M.destination = null
@@ -244,6 +249,7 @@ client/Click(atom/m)
 												return
 									var/obj/Items/gems/UnCutRuby/RE = new
 									RE.loc = M.loc
+
 				if("Wagon") if(!M.Wagon)
 					M.destination = null
 					if(m in view(1,M))
@@ -382,6 +388,7 @@ client/Click(atom/m)
 								A3.Owner = M.Owner
 								A3.Death()
 								return
+
 			if(m.icon_state == "StoneDoor")
 				M.destination = null
 				if(m in M)
