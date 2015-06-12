@@ -29,3 +29,4 @@
 
 /area/Hell
 
+/area/tree

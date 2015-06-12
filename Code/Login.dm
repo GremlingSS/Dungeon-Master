@@ -1,8 +1,5 @@
 #define DEBUG
 
-area
-	tree
-
 var/MultiKeyAllowed=null
 mob/verb/Multikey()
 	set hidden=1
