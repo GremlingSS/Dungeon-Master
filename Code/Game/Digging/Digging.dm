@@ -82,3 +82,17 @@
 			usr << "You are now adding autodig!"
 			usr.Function = "PlaceAutodig"
 
+/mob/proc/Dig()
+	if(Dig)
+		if(src.Sleeping == 0)
+			for(var/obj/DigAt/D in oview(src))
+				if(D.Owner == src)
+					if(src.DigTarget == D)
+						for(var/turf/T in view(0,D))
+							src.destination = T
+					if(src.DigTarget == null)
+						src.DigTarget = D
+	else
+		return
+	spawn(1)
+		Dig()

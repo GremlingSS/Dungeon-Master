@@ -569,3 +569,20 @@ Admin/verb/ChangeEventButton(VERB as text)
 		else
 			usr<<"You input ''[VERB]''"
 			return
+
+/mob/verb/Reboot()
+	set hidden = 1
+	if(src.GM == 1)
+		world << "<b><font color=red> World Rebooting!!"
+		sleep(50)
+		world.Reboot()
+
+/mob/verb/GMChat()
+	set hidden = 1
+	var/T = input("Shout")as null|text
+	if(T)
+		for(var/mob/M in world)
+			if(usr.GM == 1)
+				if(M.GM == 1)
+					M << "<font color = yellow><strong>[usr] says: </strong>[T]<br>"
+		return

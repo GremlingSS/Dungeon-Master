@@ -584,3 +584,196 @@
 										A1.icon_state = ""
 										A1.TowerCapGrow()
 										return
+
+/obj/proc/PlantRegen()
+	if(src.Content <= 4)
+		src.Content += 1
+		if(src.Content >= 1)
+			if(src.Content3 == "Grape")
+				src.icon_state = "PPlant5"
+			if(src.Content3 == "Tomato")
+				src.icon_state = "Plant5"
+		if(src.Content >= 2)
+			if(src.Content3 == "Grape")
+				src.icon_state = "PPlant4"
+			if(src.Content3 == "Tomato")
+				src.icon_state = "Plant4"
+		if(src.Content >= 3)
+			if(src.Content3 == "Grape")
+				src.icon_state = "PPlant3"
+			if(src.Content3 == "Tomato")
+				src.icon_state = "Plant3"
+		if(src.Content >= 4)
+			if(src.Content3 == "Grape")
+				src.icon_state = "PPlant2"
+			if(src.Content3 == "Tomato")
+				src.icon_state = "Plant2"
+		if(src.Content >= 5)
+			if(src.Content3 == "Grape")
+				src.icon_state = "PPlant1"
+			if(src.Content3 == "Tomato")
+				src.icon_state = "Plant1"
+	spawn(1200)
+		src.PlantRegen()
+		return
+
+/obj/proc/TowerCapGrow()
+	sleep(1000)
+	var/mob/Monsters/Critters/TowerCap/C = new
+	C.loc = src.loc
+	del(src)
+	return
+
+/obj/proc/GrapeGrow()
+	sleep(1000)
+	if(Season != "Winter")
+		var/obj/Items/Plants/GrapeVine/T = new
+		T.loc = src.loc
+		T.name = "Grape Vine Plant"
+		del(src)
+	else del(src)
+
+/obj/proc/AcidSpray()
+	if(src.BloodAcidity >= 1)
+		for(var/mob/Monsters/M in range(0,src))
+			if(M.BloodAcidity == 0)
+				view(M) << "[M] steps into a pool of acidic blood!"
+				M.BloodContent -= 10
+				M.BloodLoss()
+		for(var/turf/grounds/Y in view(1,src))
+			var/AcidMelt = prob(src.BloodAcidity)
+			if(AcidMelt == 1)
+				Y.name = "acid ground"
+				Y.icon = 'Cave.dmi'
+				Y.icon_state = "Acidground"
+				Y.Sky = 1
+				Y.Content3 = "CanClimb"
+				Y.OIcon = "Acidground"
+				Y.density = 0
+				Y.CanDigAt = 0
+				Y.opacity = 0
+		for(var/obj/Items/I in view(0,src))
+			var/Melt = prob(src.BloodAcidity)
+			if(Melt == 1)
+				var/obj/Bloods/AcidGoo/A = new(I.loc)
+				A.name = I.name
+				del I
+		if(src.Undead == 0)
+			src.icon += rgb(-50,150,0)
+			src.Undead = 1
+	spawn(20)
+		src.AcidSpray()
+
+/obj/proc/TomatoGrow()
+	sleep(1000)
+	if(Season != "Winter")
+		var/obj/Items/Plants/TomatoPlant/T = new
+		T.loc = src.loc
+		T.name = "Tomato Plant"
+		del(src)
+	else
+		for(var/turf/T in view(0,src))
+			T.HasPlantIn = 0
+			del(src)
+	return
+
+/obj/proc/GarlicGrow()
+	sleep(1000)
+	if(Season != "Winter")
+		var/obj/Items/Plants/GarlicPlant/T = new
+		T.loc = src.loc
+		T.name = "Garlic Plant"
+		del(src)
+	else
+		for(var/turf/T in view(0,src))
+			T.HasPlantIn = 0
+			del(src)
+	return
+
+/obj/proc/PoisonSporeGrow()
+	sleep(750)
+	if(src)
+		for(var/turf/T in view(0,src))
+			if(T.Detailed == 0)
+				if(T.Content == "Marsh")
+					var/mob/Monsters/Critters/PoisonSporePlant/P = new
+					P.loc = src.loc
+	del(src)
+	return
+
+/obj/proc/CarnGrow()
+	sleep(750)
+	if(src)
+		for(var/turf/T in view(0,src))
+			if(T.Detailed == 0)
+				if(T.Content == "Marsh")
+					var/mob/Monsters/Critters/CarnivorousPlant/P = new
+					P.loc = src.loc
+	del(src)
+	return
+
+/obj/proc/TreeGrow()
+	sleep(1000)
+	if(Season != "Winter")
+		for(var/turf/T in view(0,src))
+			if(T.icon_state == "Grass")
+				T.icon = 'plants.dmi'
+				T.icon_state = "tree 2x1"
+				T.overlays += /obj/Trees/tree2x2
+				T.overlays += /obj/Trees/tree1x2
+				T.overlays += /obj/Trees/tree3x2
+				T.overlays += /obj/Trees/leaves3x2
+				T.overlays += /obj/Trees/leaves2x2
+				T.overlays += /obj/Trees/leaves1x2
+				T.overlays += /obj/Trees/leaves1x1
+				T.overlays += /obj/Trees/leaves2x1
+				T.overlays += /obj/Trees/leaves3x1
+				T.Tree = 1
+				T.IsWood = 1
+				T.density = 1
+				T.opacity = 1
+				T.HP = 250
+				T.name = "Tree"
+			if(T.icon_state == "Snow")
+				T.icon = 'plants.dmi'
+				T.icon_state = "SnowTree"
+				T.overlays += /obj/Trees/tree2x2
+				T.overlays += /obj/Trees/tree1x2
+				T.overlays += /obj/Trees/tree3x2
+				T.Tree = 1
+				T.IsWood = 1
+				T.density = 1
+				T.opacity = 1
+				T.HP = 250
+				T.name = "Tree"
+			if(T.icon_state == "Desert")
+				T.icon_state = "Cactus"
+				T.Tree = 1
+				T.density = 1
+				T.HP = 250
+				T.opacity = 1
+				T.IsWood = 1
+				T.name = "Cactus"
+				T.Cactus = 1
+			if(T.Content == "Marsh")
+				T.icon_state = "Bamboo"
+				T.Tree = 1
+				T.density = 1
+				T.HP = 250
+				T.IsWood = 1
+				T.opacity = 1
+				T.name = "Bamboo"
+				T.Bamboo = 1
+	del(src)
+	return
+
+/obj/proc/TomatoDecay()
+	spawn(19000)
+	if(src.suffix == null)
+		for(var/turf/t in view(0,src))
+			if(t.icon_state == "FarmLand")
+				if(t.HasPlantIn == 1)
+					t.HasPlantIn = 0
+		del(src)
+	else
+		src.TomatoDecay()

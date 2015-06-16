@@ -317,3 +317,567 @@ mob/Monsters/proc/Tiredness()
 			CanBeSlaved=0 //We only want these set to 0 if the ownership if going to a mob.
 		Owner = WHO //Regardless of other details, this proc ALWAYS sets src's Owner to WHO unless it is a royal unit.
 		return(1)
+
+/mob/proc/Meditation()
+	spawn()
+		if(Meditating)
+			Meditating = 0
+			Owner << "[src] prepares to stop meditating."
+		else
+			Meditating = 1
+			view(src) << "[src] starts to meditate. They will slowly gain magical skills over time."
+			if(StopDouble("Meditation"))
+				while(Meditating)
+					if(ismob(Owner)) if(!Owner:client) break
+					Target = null
+					BowOn = 0
+					CanWalk = 0
+					destination = null
+					sleep(100)
+					if(MagicalWill < 50) if(prob(35))
+						MagicalWill += 0.5
+						if(Race == "Svartalfar") MagicalWill += 0.5
+					if(MagicalAnger < 50) if(prob(35))
+						MagicalAnger += 0.5
+						if(Race == "Svartalfar") MagicalAnger += 0.5
+					if(MagicalMind < 50) if(prob(30))
+						MagicalMind += 0.5
+						if(Race == "Svartalfar") MagicalMind += 0.5
+					if(MagicalConcentration < 50) if(prob(30))
+						MagicalConcentration += 0.5
+						if(Race == "Svartalfar") MagicalConcentration += 0.5
+					if(MaxMana < 250) if(prob(40))
+						MaxMana += 1.25
+						if(Race == "Svartalfar") MaxMana += 1.25
+					if(Mana<MaxMana) Mana+=0.5
+					GainEXP(25)
+				Meditating=0
+				view(src) << "[src] finishes meditating and stands up."
+				RunningProcs-="Meditation"
+				CanWalk = 1
+
+/mob/proc/CacoonTrap()
+	for(var/mob/Monsters/X in range(4,src))
+		var/OGB = 0
+		if(X.Owner != src.Owner)
+			if(!X.Critter)
+				for(var/mob/KLL in Players2)
+					if(KLL == src.Owner)
+						for(var/mob/MK in Players2)
+							if(X.Owner == MK)
+								if(MK.name in KLL.AllyList || MK.Faction == KLL.Faction)
+									OGB = 1
+		if(OGB == 0)
+			var/mob/Monsters/Devourer/FleshCrawler/F1 = new(loc)
+			var/mob/Monsters/Devourer/FleshCrawler/F2 = new(loc)
+			F1.Owner = src.Owner
+			F2.Owner = src.Owner
+			F1.destination = X
+			F2.destination = X
+			F1.name = "{[F1.Owner]} Flesh Crawler"
+			F2.name = "{[F2.Owner]} Flesh Crawler"
+			view(src) << "[src] explodes open in a shower of gore and releases two small monstrosities!"
+			src.Owner << "<b><font color=red><font size=3>[src] has detected an intruder at [src.x],[src.y],[src.z]!"
+			del src
+	spawn(5)
+		src.CacoonTrap()
+
+/mob/proc/SolarPowered()
+	if(night == 0)
+		src.Hunger += 1
+		if(src.Hunger >= 100)
+			src.Hunger = 100
+		src.Mana += 1
+		if(src.Mana >= src.MaxMana)
+			src.Mana = src.MaxMana
+		src.Tiredness += 0.5
+		if(src.Tiredness >= 100)
+			src.Tiredness = 100
+	spawn(100)
+		src.SolarPowered()
+
+/mob/proc/Running()
+	if(!Running && Delay > 1)
+		view(src) << "[src] starts to run!"
+		Running = 1
+		Delay -= 1
+		Tiredness -= 25
+		spawn(300)
+			Delay += 1
+			view(src) << "[src] stops running!"
+			spawn(100)
+			Running = 0
+
+/mob/proc/textlist(var/textlist)
+	writing=list();for(var/t=1,t<=length(textlist),t++)writing+=copytext(textlist,t,t+1)
+
+/mob/proc/Text(mob/m,var/x,var/y,var/offx,var/offy,var/t)
+	if(m.key!=null)
+		textlist(t)
+		for(var/w in writing)
+			var/obj/HUD/Text/s=new(m.client)
+			s.screen_loc="[x]:[offx],[y]:[offy]"
+			s.icon_state=w
+			s.name="\proper[w]"
+			offx+=8
+			if(offx >= 32) {/*sleep(0.1);*/offx-=32 ; x++}
+
+/mob/proc/FindItems()
+	for(var/obj/Items/I in view(6,src))
+		if(I.suffix == null)
+			if(I.Door == 0)
+				if(I.IsTrap == 0)
+					if(I.Content3 != "Cage")
+						if(src.Target == null)
+							src.Target = I
+	for(var/obj/Items/I in view(0,src))
+		if(src.Target == I)
+			del(I)
+	if(src.Target)
+		var/obj/A = src.Target
+		if(A.suffix == null)
+			step_towards(src,src.Target)
+		else
+			src.Target = null
+	else
+		step_rand(src)
+	spawn(10)
+		FindItems()
+
+/mob/proc/TurnOffAttack()
+	src.destination = null
+	spawn(500) TurnOffAttack()
+
+/mob/proc/PetFollow()
+	if(destination)
+		step_towards(src,src.destination)
+	else
+		return
+	spawn(5)
+		PetFollow()
+
+
+mob/proc/Ready()
+	src.Owner << "<b><font color=purple>[src]'s egg sack begins to swell she may now create a lair!"
+	src.icon = 'SpiderQueenMature.dmi'
+	src.icon_state = "Normal"
+	src.MaxWebContent += 100
+	src.WebContent = src.MaxWebContent
+	src.CanBreed = 1
+
+/mob/proc/Detail()
+	for(var/mob/Monsters/M in usr.Selected)
+		var/mob/Test/left = new
+		left.loc = locate(M.x-1,M.y,M.z)
+		for(var/turf/TUR in view(0,left))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = NORTH
+				src.destination = null
+			if(TUR.dir == SOUTHWEST)
+				TUR.dir = NORTH
+			if(TUR.dir == NORTHWEST)
+				TUR.dir = NORTH
+			if(TUR.dir == WEST)
+				TUR.dir = SOUTHWEST
+			if(TUR.dir == EAST)
+				TUR.dir = NORTHEAST
+		var/mob/Test/right = new
+		right.loc = locate(M.x+1,M.y,M.z)
+		for(var/turf/TUR in view(0,right))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = SOUTH
+				src.destination = null
+			if(TUR.dir == SOUTHEAST)
+				TUR.dir = SOUTH
+			if(TUR.dir == NORTHEAST)
+				TUR.dir = SOUTH
+			if(TUR.dir == WEST)
+				TUR.dir = SOUTHWEST
+			if(TUR.dir == EAST)
+				TUR.dir = NORTHWEST
+		var/mob/Test/top = new
+		top.loc = locate(M.x,M.y+1,M.z)
+		for(var/turf/TUR in view(0,top))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = WEST
+				src.destination = null
+			if(TUR.dir == NORTHEAST)
+				TUR.dir = WEST
+			if(TUR.dir == NORTHWEST)
+				TUR.dir = WEST
+			if(TUR.dir == NORTH)
+				TUR.dir = SOUTHEAST
+			if(TUR.dir == SOUTH)
+				TUR.dir = SOUTHWEST
+		var/mob/Test/bot = new
+		bot.loc = locate(M.x,M.y-1,M.z)
+		for(var/turf/TUR in view(0,bot))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = EAST
+				src.destination = null
+			if(TUR.dir == SOUTHEAST)
+				TUR.dir = EAST
+			if(TUR.dir == SOUTHWEST)
+				TUR.dir = EAST
+			if(TUR.dir == NORTH)
+				TUR.dir = NORTHEAST
+			if(TUR.dir == SOUTH)
+				TUR.dir = NORTHWEST
+		var/mob/Test/botleft = new
+		botleft.loc = locate(M.x-1,M.y-1,M.z)
+		for(var/turf/TUR in view(0,botleft))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = SOUTHWEST
+				src.destination = null
+		var/mob/Test/botright = new
+		botright.loc = locate(M.x+1,M.y-1,M.z)
+		for(var/turf/TUR in view(0,botright))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = SOUTHEAST
+				src.destination = null
+		var/mob/Test/topright = new
+		topright.loc = locate(M.x+1,M.y+1,M.z)
+		for(var/turf/TUR in view(0,topright))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = NORTHEAST
+				src.destination = null
+		var/mob/Test/topleft = new
+		topleft.loc = locate(M.x-1,M.y+1,M.z)
+		for(var/turf/TUR in view(0,topleft))
+			if(TUR.icon_state == "CaveWall")
+				TUR.icon = 'Cave.dmi'
+				TUR.icon_state = "StoneWall"
+				TUR.HP += 200
+				TUR.name = "DetailedWall"
+				TUR.dir = NORTHWEST
+				src.destination = null
+		del(topleft)
+		del(topright)
+		del(botright)
+		del(botleft)
+		del(bot)
+		del(top)
+		del(left)
+		del(right)
+
+/mob/proc/Save()
+	var/sav = "players/[src.ckey]_save.sav"
+	var/savefile/S = new(sav)
+	S["Kills"] << src.Kills
+	S["Faction"] << src.Faction
+	S["IsClanLeader"] << src.IsClanLeader
+
+/mob/proc/Load()
+	var/sav = "players/[src.ckey]_save.sav"
+	if(length(file(sav)))
+		var/savefile/S = new(sav)
+		S["Kills"] >> src.Kills
+		S["Faction"] >> src.Faction
+		S["IsClanLeader"] >> src.IsClanLeader
+
+/mob/proc/Heat()
+	for(var/mob/Monsters/M in view(4,src))
+		if(M.Coldness >= 0)
+			M.Coldness = 0
+	for(var/turf/grounds/KKG in view(1,src))
+		if(KKG.OnFire == 0)
+			if(KKG.IsWood == 1)
+				var/CatchChance = prob(10)
+				if(CatchChance)
+					if(KKG.icon_state == "WoodWall")
+						KKG.Fire()
+					if(KKG.icon_state == "TribalWall")
+						KKG.Fire()
+					if(KKG in view(0,src))
+						if(KKG.icon_state == "WoodFloor")
+							KKG.Fire()
+						if(KKG.icon_state == "Tribal")
+							KKG.Fire()
+	spawn(75)
+		Heat()
+
+/mob/proc/BodyDecay()
+	spawn(4000)
+	if(src.suffix == null)
+		del(src)
+	else
+		src.BodyDecay()
+
+/mob/proc/FishDecay()
+	spawn(500)
+		if(src.suffix == null)
+			del(src)
+
+/mob/proc/Struggle()
+	if(src)
+		for(var/obj/Items/Traps/PitTrap/P in view(0,src))
+			if(src.InHole == 1)
+				var/E
+				E = prob(src.SneakingSkill/2)
+				if(E == 1)
+					view()<< "<b><font color=red>[src] has escaped from a pit trap!"
+					src.Owner << "<b><font color=red>[src] has escaped from a pit trap!"
+					src.InHole = 0
+					src.SneakingSkill += 0.5
+					del(P)
+
+			else
+				return
+	spawn(100)
+		Struggle()
+
+/mob/proc/FlameAttack()
+	if(src.destination in view(1,src))
+		view() << "[src] breathes fire over [src.destination]"
+		var/obj/Fire/F = new
+		F.loc = src.loc
+		F.dir = src.dir
+	spawn(750)
+		FlameAttack()
+
+/mob/proc/Close()
+	if(src.Up == 0)
+		src.Up = 1
+		Building(src)
+		return
+	else
+		src.Up = 0
+		for(var/obj/HUD/H in src.client.screen)
+			del(H)
+
+/mob/proc/StopWalk()
+	if(src.Wagon == 0)
+		src.WalkNumber += 1
+		src.CanWalk = 0
+		spawn(20)
+			src.WalkNumber -= 1
+			if(src.WalkNumber <= 0)
+				src.WalkNumber = 0
+				src.Stunned = 0
+				src.CanWalk = 1
+			return
+/mob/proc/StunnedWalk()
+	if(src.Wagon == 0)
+		src.WalkNumber += 1
+		view(src) << "[src] is stunned!"
+		src.Stunned = 1
+		spawn(150)
+			src.WalkNumber -= 1
+			if(src.WalkNumber <= 0)
+				src.Stunned = 0
+				src.CanWalk = 1
+				view(src) << "[src] is no longer stunned."
+			return
+
+/mob/proc/Slowdown2()
+	if(src.Wagon == 0)
+		src.Delay += 5
+		spawn(50)
+			src.Delay -= 5
+			return
+
+mob/proc/LegendView()
+	src << browse(Legends)
+
+/mob/proc/FightSound()
+	spawn(5)
+		if(src.HoldingWeapon)
+			var/S = rand(1,3)
+			if(S == 1)
+				view() << '1.wav'
+			if(S == 2)
+				view() << '2.wav'
+			if(S == 3)
+				view() << '3.wav'
+
+/mob/proc/FightSound2()
+	spawn(5)
+		if(!HoldingWeapon)
+			var/S = rand(1,3)
+			if(S == 1)
+				view() << 'P1.wav'
+			if(S == 2)
+				view() << 'P2.wav'
+			if(S == 3)
+				view() << 'P3.wav'
+
+/mob/proc/CreatePotion()
+	var/mob/WorkShops/PotionStation/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "Potion Station"
+	L.overlays += /obj/WSoverlays/Poison/
+	var/mob/WorkShops/PotionStation/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "Potion Station"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreateBone()
+	var/mob/WorkShops/BoneCraft/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "BoneCraftingStation"
+	L.overlays += /obj/WSoverlays/Bone/
+	var/mob/WorkShops/BoneCraft/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "BoneCraftingStation"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreatePoison()
+	var/mob/WorkShops/PoisonStation/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "PoisonStation"
+	L.overlays += /obj/WSoverlays/Poison/
+	var/mob/WorkShops/PoisonStation/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "PoisonStation"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreateWorkShopLeather()
+	var/mob/WorkShops/LeatherWorks/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "LeatherCraftingStation"
+	L.overlays += /obj/WSoverlays/Leather/
+	var/mob/WorkShops/LeatherWorks/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "LeatherCraftingStation"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreateCarpentry()
+	var/mob/WorkShops/Carpentry/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "CarpentryCraftingStation"
+	L.overlays += /obj/WSoverlays/Carpentry/
+	var/mob/WorkShops/Carpentry/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "CarpentryCraftingStation"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreateSmelter()
+	var/mob/WorkShops/Smelters/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "SmelterStation"
+	L.overlays += /obj/WSoverlays/Smelter/
+	var/mob/WorkShops/Smelters/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "SmelterStation"
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreatePit()
+	var/obj/Items/Traps/PitTrap/L = new
+	L.loc = src.loc
+	L.Owner = src.Owner
+	L.name = "Pit"
+	if(src.SubRace == "Hunter")
+		if(src.Level >= 20)
+			L.icon = null
+			L.Hole = 1
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreateRib()
+	var/obj/Items/Traps/RibTrap/L = new
+	L.loc = src.loc
+	L.Owner = src.Owner
+	L.Hole = 1
+	L.name = "Rib Trap"
+	src.BoneCraftingSkill += 1
+
+/mob/proc/CreateBST()
+	var/obj/Items/Traps/BST/L = new
+	L.loc = src.loc
+	L.Owner = src.Owner
+	L.Hole = 1
+	L.name = "Bone Spike Trap"
+	src.BoneCraftingSkill += 1
+
+/mob/proc/CreateCacoonTrap()
+	var/obj/Items/Traps/CacoonTrap/L = new
+	L.loc = src.loc
+	L.Owner = src.Owner
+	L.Hole = 1
+	L.name = "Cacoon Trap"
+	src.BoneCraftingSkill += 1
+
+/mob/proc/CreateStone()
+	var/obj/Items/Traps/StoneTrap/L = new
+	L.loc = src.loc
+	L.Owner = src.Owner
+	L.Hole = 1
+	L.name = "Stone Fall Trap"
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreateForge()
+	var/mob/WorkShops/Forge/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "ForgeStation"
+	L.overlays += /obj/WSoverlays/Forge/
+	var/mob/WorkShops/Forge/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "ForgeStation"
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreateKit()
+	var/mob/WorkShops/Kitchen/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "Kitchen"
+	L.overlays += /obj/WSoverlays/Kitchen/
+	var/mob/WorkShops/Kitchen/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "Kitchen"
+	src.WoodCraftingSkill += 1
+
+/mob/proc/CreateGem()
+	var/mob/WorkShops/GemCutter/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "GemCutter"
+	L.overlays += /obj/WSoverlays/Gem/
+	var/mob/WorkShops/GemCutter/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "GemCutter"
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreateMasonary()
+	var/mob/WorkShops/Masonary/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "Masonary"
+	L.overlays += /obj/WSoverlays/Masonary/
+	var/mob/WorkShops/Masonary/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "Masonary"
+	src.StoneCraftingSkill += 1
+
+/mob/proc/CreateMelter()
+	var/mob/WorkShops/Melter/Left/L = new
+	L.loc = locate(src.x-1,src.y,src.z)
+	L.name = "Melter"
+	L.overlays += /obj/WSoverlays/Forge/
+	var/mob/WorkShops/Melter/Right/R = new
+	R.loc = locate(src.x,src.y,src.z)
+	R.name = "Melter"
+	src.StoneCraftingSkill += 1

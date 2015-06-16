@@ -35,3 +35,41 @@
 
 /obj/PermPortal2/New()
 	Portal()
+
+/obj/proc/Portal()
+	for(var/mob/M in view(0,src))
+		if(M.loc != locate(M.x,M.y,4))
+			M.loc = locate(M.x,M.y-1,4)
+			M.destination = null
+			var/C = prob(15)
+			var/P = prob(25)
+			if(M.client == null)
+				if(!M.SubRace)
+					if(C) if(M.CanSee)
+						if(M.Wagon == 0 && M.Race != "Demon" && M.Race != "Gargoyle" && M.Race != "Demon" && M.Race != "Dragon" && M.Unholy == 0)
+							M.Owner << "[M] goes insane from the horror and tears their own eyes out!"
+							M.HasLeftEye = 0
+							M.HasRightEye = 0
+							M.CanSee = 0
+							M.RightEyeHP = 0
+							M.LeftEyeHP = 0
+							M.LeftEye = "Destroyed"
+							M.RightEye = "Destroyed"
+					if(C == 0)
+						if(P)
+							if(ismob(M.Owner))
+								if(M.Wagon == 0)
+									if(M.Race != "Demon" && M.Race != "Gargoyle" && M.Race != "Demon" && M.Race != "Dragon")
+										M.Owner << "[M] is possessed by the demonic forces surrounding the portal!"
+										M.RaceChange(SUBRACE="HalfDemon")
+		else
+			M.loc = locate(M.x,M.y-1,src.Content)
+			M.destination = null
+	spawn(10)
+		Portal()
+		return
+
+/obj/proc/AstralPortal()
+	for(var/mob/M in view(0,src))
+		var/obj/AstralPortal/A
+		M.loc = A.GoesTo

@@ -42,3 +42,15 @@
 		usr << "You need to be in a clan to capture a shrine."
 	del A
 	del A2
+
+/mob/proc/PillarPowerup()
+	if(ismob(Owner))
+		var/mob/M = Owner
+		for(var/obj/PowerupPillar/P in world)
+			if(M.Faction == P.Content2)
+				Strength += P.Strength
+				GainEXP(P.Content3)
+				Agility += P.Agility
+				Defence += P.Defence
+				Intelligence += P.Intelligence
+				weightmax += P.weightmax
