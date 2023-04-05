@@ -58,7 +58,7 @@
 						P.CraftRank = "Average Quality"
 					if(M.WoodCraftingSkill <= 20)
 						P.CraftRank = "Poor Quality"
-					P.HP = 999999999999999999999
+					P.HP = 99999999
 					M.WoodCraftingSkill += 2
 					P.TrainCraft()
 					del(W)

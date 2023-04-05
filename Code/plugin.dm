@@ -39,8 +39,8 @@
 //	Deadron's TextProcs
 
 /proc/dd_text2list(text, separator)
-	var/textlength      = lentext(text)
-	var/separatorlength = lentext(separator)
+	var/textlength      = length(text)
+	var/separatorlength = length(separator)
 	var/list/textList   = new /list()
 	var/searchPosition  = 1
 	var/findPosition    = 1
@@ -73,7 +73,7 @@
 // End of Library
 
 /client/Topic(hr,h[],hs)
-	var{html=_CSS;extra="clear=1;window=[h["window"]?h["window"]:"popup"]"}
+	var/html={"<style type='text/css'></style>";extra="clear=1;window=[h["window"]?h["window"]:"popup"]"}
 	switch(h["command"])
 		if("create")
 			//if(!(ckey in Admin)){mob<<"\red You cannot access this command. This attempted breech of security has been recorded!";world.log<<"[mob.name] ([mob.key]) attempted to use edit!";return..()}
@@ -289,7 +289,7 @@
 					may potentially cause an error if modified.  If you ignore that warning and \
 					continue to modify the variable, you alone are responsible for whatever \
 					mayhem results!</body></html>"
-	if(html!=_CSS)mob<<browse(html,extra)
+	if(html!=_CSS)mob<<browse(html)
 	return..()
 
 /proc

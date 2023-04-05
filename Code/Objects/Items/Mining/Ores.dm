@@ -1,6 +1,6 @@
 /obj/Items/ores
 
-/obj/Items/ores.New()
+/obj/Items/ores/New()
 	ItemDecay()
 
 /obj/Items/ores/Iron

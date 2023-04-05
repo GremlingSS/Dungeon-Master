@@ -157,7 +157,7 @@ var/vote_system/vote_system = new
 				<table width="100%">
 					<tr><td>"}
 		for(var/i = 1 to src.answers.len)
-			. += "<input type=\"button\" value=\"[src.answers[i]]\" onclick=\"parent.location='byond://?src=\ref[src];cmd=vote;choice=[i]';\" [(usr.ckey in results) && results[usr.ckey] == i ? "class=\"selected\"" :] /></td>"
+			. += "<input type=\"button\" value=\"[src.answers[i]]\" onclick=\"parent.location='byond://?src=\ref[src];cmd=vote;choice=[i]';\" [(usr.ckey in results) && results[usr.ckey] == i ? "class=\"selected\"" : ""] /></td>"
 			if((i % 3) == 0)
 				. += "</tr><tr>"
 			. += "<td>"

@@ -18,12 +18,11 @@
 
 /mob/Developer/verb/DevCreate()
 	set category = "Admin"
-	var
-		maxlen = 0
-		list/List2 = list()
-		list/List3 = list()
-		i = 0
-		a
+	var/maxlen = 0
+	var/list/List2 = list()
+	var/list/List3 = list()
+	var/i = 0
+	var/a
 	for(a in typesof(/mob,/obj,/turf))
 		List2.Add(a)
 	maxlen = 200
